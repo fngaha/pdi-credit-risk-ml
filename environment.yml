@@ -1,0 +1,22 @@
+name: pdi-credit-risk-ml
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - numpy
+  - pandas
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - openml
+  - flask
+  - joblib
+  - pydantic
+  - pytest
+  - ipykernel
+  - pip:
+      - ruff
+      - black
+      - pre-commit

@@ -1,0 +1,30 @@
+# Environnement
+.venv/
+.env
+*.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.log
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Données
+data/raw/*
+data/processed/*
+!data/.gitkeep
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Modèles
+models/
+*.joblib
+
+# VS Code, PyCharm, etc.
+.vscode/
+.idea/
