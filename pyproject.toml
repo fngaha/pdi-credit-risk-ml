@@ -35,3 +35,6 @@ ignore = ["E203"]
 [tool.ruff.lint.isort]
 known-first-party = ["credit_g_ml"]
 combine-as-imports = true
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
