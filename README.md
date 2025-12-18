@@ -1,6 +1,6 @@
 # pdi-credit-risk-ml
 
-Projet de fin de formation – Développeur orienté IA  
+Projet de fin de formation – Développeur orienté IA
 Score de risque crédit basé sur le dataset **credit-g** (OpenML), développé selon la méthodologie **CRISP-DM**.
 
 ## Objectifs

@@ -1,0 +1,37 @@
+[project]
+name = "pdi-credit-risk-ml"
+version = "0.1.0"
+description = "Credit risk scoring on the credit-g dataset (OpenML) using CRISP-DM."
+requires-python = ">=3.11"
+# On peut laisser les deps à vide ici puisqu'on a environment.yml + requirements.txt
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.pytest_cache
+  | \.venv
+  | build
+  | dist
+  | data
+  | models
+)/
+'''
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+# Règles principales : erreurs/avertissements + bugs + import sorting
+select = ["E", "F", "W", "B", "I"]
+# Compatibilité black
+ignore = ["E203"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["credit_g_ml"]
+combine-as-imports = true
