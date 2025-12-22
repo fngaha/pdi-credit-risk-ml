@@ -18,3 +18,14 @@ Score de risque crédit basé sur le dataset **credit-g** (OpenML), développé 
 ## Structure du projet
 
 (à compléter au fur et à mesure)
+
+## Résultats – Baseline
+
+Le modèle baseline (Logistic Regression) atteint :
+
+- ROC AUC ≈ 0.78
+- Bon rappel sur la classe "bad" (objectif métier)
+
+Voir :
+- `reports/baseline_logistic_regression.md`
+- `reports/roc_curve_logistic_regression.png`
