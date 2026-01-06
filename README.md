@@ -49,7 +49,10 @@ Cela génère le fichier :
 
 Depuis la racine du projet :
 
-```python api/app.py```
+```
+export PYTHONPATH=src
+python -m api.app
+```
 
 
 Le serveur démarre par défaut sur :
@@ -94,10 +97,10 @@ curl -X POST http://127.0.0.1:5000/predict \
     "num_dependents": 1,
     "checking_status": "0<=X<200",
     "credit_history": "existing paid",
-    "purpose": "car (new)",
+    "purpose": "new car",
     "savings_status": "500<=X<1000",
     "employment": "4<=X<7",
-    "personal_status": "female div/dep",
+    "personal_status": "female div/dep/mar",
     "other_parties": "guarantor",
     "property_magnitude": "car",
     "other_payment_plans": "bank",
@@ -113,9 +116,9 @@ Exemple de réponse
 ```json
 {
   "label": "bad",
-  "probability_bad": 0.5550409934563036,
-  "probability_good": 0.44495900654369636,
-  "risk_level": "medium"
+  "probability_bad": 0.7302879499577739,
+  "probability_good": 0.26971205004222615,
+  "risk_level": "high"
 }
 ```
 

@@ -1,29 +1,24 @@
 from __future__ import annotations
 
 import os
-import sys
 from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request
 from pydantic import ValidationError
 
-# Pour importer src/credit_g_ml
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SRC_DIR = PROJECT_ROOT / "src"
-sys.path.append(str(SRC_DIR))
+from api.schemas import CreditRiskRequest, CreditRiskResponse
+from credit_g_ml.inference import load_model, predict_single
+from credit_g_ml.metadata import get_categorical_values
 
-from schemas import CreditRiskRequest, CreditRiskResponse  # noqa: E402
-
-from credit_g_ml.inference import load_model, predict_single  # noqa: E402
-
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 UI_DIR = PROJECT_ROOT / "ui"
+
 app = Flask(
     __name__,
-    template_folder=UI_DIR / "templates",
-    static_folder=UI_DIR / "static",
+    template_folder=str(UI_DIR / "templates"),
+    static_folder=str(UI_DIR / "static"),
 )
 
-# Charger le modèle au démarrage (simple et efficace pour un PDI)
 MODEL_PATH = Path(
     os.getenv(
         "MODEL_PATH",
@@ -31,6 +26,29 @@ MODEL_PATH = Path(
     )
 )
 pipeline = load_model(MODEL_PATH)
+
+DEFAULT_FORM = {
+    "duration": 24,
+    "credit_amount": 5000,
+    "installment_commitment": 3,
+    "residence_since": 4,
+    "age": 45,
+    "existing_credits": 2,
+    "num_dependents": 1,
+    "checking_status": "0<=X<200",
+    "credit_history": "existing paid",
+    "purpose": "new car",
+    "savings_status": "500<=X<1000",
+    "employment": "4<=X<7",
+    "personal_status": "female div/dep/mar",
+    "other_parties": "guarantor",
+    "property_magnitude": "car",
+    "other_payment_plans": "bank",
+    "housing": "rent",
+    "job": "unskilled resident",
+    "own_telephone": "none",
+    "foreign_worker": "yes",
+}
 
 
 @app.get("/health")
@@ -41,7 +59,9 @@ def health():
 @app.post("/predict")
 def predict():
     try:
-        payload = request.get_json(force=True)
+        payload = request.get_json(silent=True)
+        if payload is None:
+            return jsonify({"error": "invalid_json"}), 400
         req = CreditRiskRequest(**payload)
     except ValidationError as e:
         return jsonify({"error": "validation_error", "details": e.errors()}), 422
@@ -50,7 +70,6 @@ def predict():
 
     result = predict_single(pipeline, req.model_dump())
 
-    # Risk level simple (tu pourras le rendre configurable ensuite)
     if result.probability_bad >= 0.7:
         risk_level = "high"
     elif result.probability_bad >= 0.4:
@@ -64,21 +83,24 @@ def predict():
         probability_good=result.probability_good,
         risk_level=risk_level,
     )
-
     return jsonify(resp.model_dump())
 
 
 @app.get("/")
 def home():
-    return render_template("index.html")
+    categorical_options = get_categorical_values()
+    return render_template(
+        "index.html",
+        categorical_options=categorical_options,
+        form=DEFAULT_FORM,
+    )
 
 
 @app.post("/ui/predict")
 def ui_predict():
-    try:
-        form_payload = request.form.to_dict()
+    form_payload = request.form.to_dict()
 
-        # Conversion types numériques (les champs HTML arrivent en string)
+    try:
         for k in [
             "duration",
             "credit_amount",
@@ -101,6 +123,7 @@ def ui_predict():
                 error="Validation error",
                 details=e.errors(),
                 form=form_payload,
+                categorical_options=get_categorical_values(),
             ),
             422,
         )
@@ -110,6 +133,7 @@ def ui_predict():
                 "index.html",
                 error=f"Invalid form data: {e}",
                 form=form_payload,
+                categorical_options=get_categorical_values(),
             ),
             400,
         )
@@ -132,6 +156,7 @@ def ui_predict():
             "risk_level": risk_level,
         },
         form=req.model_dump(),
+        categorical_options=get_categorical_values(),
     )
 
 

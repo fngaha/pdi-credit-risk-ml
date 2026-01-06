@@ -91,67 +91,158 @@
           <!-- Catégorielles (texte libre pour le PDI; handle_unknown="ignore") -->
           <label>
             Checking status
-            <input type="text" name="checking_status" required value="{{ form.checking_status if form else '0<=X<200' }}" />
+            <select name="checking_status" required>
+              {% for option in categorical_options.checking_status %}
+                <option value="{{ option }}"
+                  {% if form and form.checking_status == option %}selected{% endif %}>
+                  {{ option }}
+                </option>
+              {% endfor %}
+            </select>
           </label>
 
           <label>
             Credit history
-            <input type="text" name="credit_history" required value="{{ form.credit_history if form else 'existing paid' }}" />
+            <select name="credit_history" required>
+              {% for option in categorical_options.credit_history %}
+                <option value="{{ option }}"
+                  {% if form and form.credit_history == option %}selected{% endif %}>
+                  {{ option }}
+                </option>
+              {% endfor %}
+            </select>
           </label>
 
           <label>
             Purpose
-            <input type="text" name="purpose" required value="{{ form.purpose if form else 'car (new)' }}" />
+            <select name="purpose" required>
+              {% for option in categorical_options.purpose %}
+                <option value="{{ option }}"
+                  {% if form and form.purpose == option %}selected{% endif %}>
+                  {{ option }}
+                </option>
+              {% endfor %}
+            </select>
           </label>
 
           <label>
             Savings status
-            <input type="text" name="savings_status" required value="{{ form.savings_status if form else '500<=X<1000' }}" />
+            <select name="savings_status" required>
+              {% for option in categorical_options.savings_status %}
+                <option value="{{ option }}"
+                  {% if form and form.savings_status == option %}selected{% endif %}>
+                  {{ option }}
+                </option>
+              {% endfor %}
+            </select>
           </label>
 
           <label>
             Employment
-            <input type="text" name="employment" required value="{{ form.employment if form else '4<=X<7' }}" />
+            <select name="employment" required>
+              {% for option in categorical_options.employment %}
+                <option value="{{ option }}"
+                  {% if form and form.employment == option %}selected{% endif %}>
+                  {{ option }}
+                </option>
+              {% endfor %}
+            </select>
           </label>
 
           <label>
             Personal status
-            <input type="text" name="personal_status" required value="{{ form.personal_status if form else 'female div/dep' }}" />
+            <select name="personal_status" required>
+              {% for option in categorical_options.personal_status %}
+                <option value="{{ option }}"
+                  {% if form and form.personal_status == option %}selected{% endif %}>
+                  {{ option }}
+                </option>
+              {% endfor %}
+            </select>
           </label>
 
           <label>
             Other parties
-            <input type="text" name="other_parties" required value="{{ form.other_parties if form else 'guarantor' }}" />
+            <select name="other_parties" required>
+              {% for option in categorical_options.other_parties %}
+                <option value="{{ option }}"
+                  {% if form and form.other_parties == option %}selected{% endif %}>
+                  {{ option }}
+                </option>
+              {% endfor %}
+            </select>
           </label>
 
           <label>
             Property magnitude
-            <input type="text" name="property_magnitude" required value="{{ form.property_magnitude if form else 'car' }}" />
+            <select name="property_magnitude" required>
+              {% for option in categorical_options.property_magnitude %}
+                <option value="{{ option }}"
+                  {% if form and form.property_magnitude == option %}selected{% endif %}>
+                  {{ option }}
+                </option>
+              {% endfor %}
+            </select>
           </label>
 
           <label>
             Other payment plans
-            <input type="text" name="other_payment_plans" required value="{{ form.other_payment_plans if form else 'bank' }}" />
+            <select name="other_payment_plans" required>
+              {% for option in categorical_options.other_payment_plans %}
+                <option value="{{ option }}"
+                  {% if form and form.other_payment_plans == option %}selected{% endif %}>
+                  {{ option }}
+                </option>
+              {% endfor %}
+            </select>
           </label>
 
           <label>
             Housing
-            <input type="text" name="housing" required value="{{ form.housing if form else 'rent' }}" />
+            <select name="housing" required>
+              {% for option in categorical_options.housing %}
+                <option value="{{ option }}"
+                  {% if form and form.housing == option %}selected{% endif %}>
+                  {{ option }}
+                </option>
+              {% endfor %}
+            </select>
           </label>
 
           <label>
             Job
-            <input type="text" name="job" required value="{{ form.job if form else 'unskilled resident' }}" />
+            <select name="job" required>
+              {% for option in categorical_options.job %}
+                <option value="{{ option }}"
+                  {% if form and form.job == option %}selected{% endif %}>
+                  {{ option }}
+                </option>
+              {% endfor %}
+            </select>
           </label>
 
           <label>
             Own telephone
-            <input type="text" name="own_telephone" required value="{{ form.own_telephone if form else 'none' }}" />
+            <select name="own_telephone" required>
+              {% for option in categorical_options.own_telephone %}
+                <option value="{{ option }}"
+                  {% if form and form.own_telephone == option %}selected{% endif %}>
+                  {{ option }}
+                </option>
+              {% endfor %}
+            </select>
           </label>
 
           <label>
             Foreign worker
-            <input type="text" name="foreign_worker" required value="{{ form.foreign_worker if form else 'yes' }}" />
+            <select name="foreign_worker" required>
+              {% for option in categorical_options.foreign_worker %}
+                <option value="{{ option }}"
+                  {% if form and form.foreign_worker == option %}selected{% endif %}>
+                  {{ option }}
+                </option>
+              {% endfor %}
+            </select>
           </label>
         </div>
 
@@ -160,9 +251,6 @@
           <a class="btn-secondary" href="/">Réinitialiser</a>
         </div>
 
-        <p class="hint">
-          Astuce : les valeurs catégorielles sont en texte libre (PDI). Plus tard, on pourra les remplacer par des listes déroulantes.
-        </p>
       </form>
 
       <footer class="footer">

@@ -119,3 +119,10 @@ button, .btn-secondary {
   .form-grid { grid-template-columns: 1fr; }
   .grid { grid-template-columns: 1fr; }
 }
+
+select {
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+}
