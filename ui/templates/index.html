@@ -3,9 +3,171 @@
   <head>
     <meta charset="utf-8" />
     <title>Credit Risk Scoring - PDI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
-    <h1>Credit Risk Scoring</h1>
-    <p>Interface en construction…</p>
+    <div class="container">
+      <header class="header">
+        <h1>Credit Risk Scoring</h1>
+        <p class="subtitle">PDI – credit-g (OpenML) • Logistic Regression baseline</p>
+      </header>
+
+      {% if error %}
+      <div class="alert alert-error">
+        <strong>Erreur :</strong> {{ error }}
+        {% if details %}
+        <pre class="details">{{ details | tojson(indent=2) }}</pre>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      {% if result %}
+      <div class="alert alert-success">
+        <div class="grid">
+          <div>
+            <div class="kpi-title">Prédiction</div>
+            <div class="kpi-value">{{ result.label | upper }}</div>
+          </div>
+          <div>
+            <div class="kpi-title">Risque</div>
+            <div class="kpi-value risk {{ result.risk_level }}">{{ result.risk_level | upper }}</div>
+          </div>
+          <div>
+            <div class="kpi-title">P(bad)</div>
+            <div class="kpi-value">{{ "%.3f"|format(result.probability_bad) }}</div>
+          </div>
+          <div>
+            <div class="kpi-title">P(good)</div>
+            <div class="kpi-value">{{ "%.3f"|format(result.probability_good) }}</div>
+          </div>
+        </div>
+        <p class="note">
+          *Les seuils de risque (low/medium/high) sont basés sur P(bad) et peuvent être ajustés.
+        </p>
+      </div>
+      {% endif %}
+
+      <form class="card" method="post" action="/ui/predict">
+        <h2>Informations client</h2>
+
+        <div class="form-grid">
+          <!-- Numériques -->
+          <label>
+            Duration (months)
+            <input type="number" name="duration" min="1" required value="{{ form.duration if form else 24 }}" />
+          </label>
+
+          <label>
+            Credit amount
+            <input type="number" name="credit_amount" min="1" step="1" required value="{{ form.credit_amount if form else 5000 }}" />
+          </label>
+
+          <label>
+            Installment commitment (1–4)
+            <input type="number" name="installment_commitment" min="1" max="4" required value="{{ form.installment_commitment if form else 3 }}" />
+          </label>
+
+          <label>
+            Residence since (1–4)
+            <input type="number" name="residence_since" min="1" max="4" required value="{{ form.residence_since if form else 4 }}" />
+          </label>
+
+          <label>
+            Age
+            <input type="number" name="age" min="18" max="120" required value="{{ form.age if form else 45 }}" />
+          </label>
+
+          <label>
+            Existing credits
+            <input type="number" name="existing_credits" min="0" max="10" required value="{{ form.existing_credits if form else 2 }}" />
+          </label>
+
+          <label>
+            Num dependents
+            <input type="number" name="num_dependents" min="0" max="10" required value="{{ form.num_dependents if form else 1 }}" />
+          </label>
+
+          <!-- Catégorielles (texte libre pour le PDI; handle_unknown="ignore") -->
+          <label>
+            Checking status
+            <input type="text" name="checking_status" required value="{{ form.checking_status if form else '0<=X<200' }}" />
+          </label>
+
+          <label>
+            Credit history
+            <input type="text" name="credit_history" required value="{{ form.credit_history if form else 'existing paid' }}" />
+          </label>
+
+          <label>
+            Purpose
+            <input type="text" name="purpose" required value="{{ form.purpose if form else 'car (new)' }}" />
+          </label>
+
+          <label>
+            Savings status
+            <input type="text" name="savings_status" required value="{{ form.savings_status if form else '500<=X<1000' }}" />
+          </label>
+
+          <label>
+            Employment
+            <input type="text" name="employment" required value="{{ form.employment if form else '4<=X<7' }}" />
+          </label>
+
+          <label>
+            Personal status
+            <input type="text" name="personal_status" required value="{{ form.personal_status if form else 'female div/dep' }}" />
+          </label>
+
+          <label>
+            Other parties
+            <input type="text" name="other_parties" required value="{{ form.other_parties if form else 'guarantor' }}" />
+          </label>
+
+          <label>
+            Property magnitude
+            <input type="text" name="property_magnitude" required value="{{ form.property_magnitude if form else 'car' }}" />
+          </label>
+
+          <label>
+            Other payment plans
+            <input type="text" name="other_payment_plans" required value="{{ form.other_payment_plans if form else 'bank' }}" />
+          </label>
+
+          <label>
+            Housing
+            <input type="text" name="housing" required value="{{ form.housing if form else 'rent' }}" />
+          </label>
+
+          <label>
+            Job
+            <input type="text" name="job" required value="{{ form.job if form else 'unskilled resident' }}" />
+          </label>
+
+          <label>
+            Own telephone
+            <input type="text" name="own_telephone" required value="{{ form.own_telephone if form else 'none' }}" />
+          </label>
+
+          <label>
+            Foreign worker
+            <input type="text" name="foreign_worker" required value="{{ form.foreign_worker if form else 'yes' }}" />
+          </label>
+        </div>
+
+        <div class="actions">
+          <button type="submit">Scorer</button>
+          <a class="btn-secondary" href="/">Réinitialiser</a>
+        </div>
+
+        <p class="hint">
+          Astuce : les valeurs catégorielles sont en texte libre (PDI). Plus tard, on pourra les remplacer par des listes déroulantes.
+        </p>
+      </form>
+
+      <footer class="footer">
+        <small>© PDI – pdi-credit-risk-ml</small>
+      </footer>
+    </div>
   </body>
 </html>
