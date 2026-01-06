@@ -52,6 +52,41 @@
             <div class="kpi-value">{{ "%.2f"|format(result.threshold) }}</div>
           </div>
         </div>
+        <div class="bars card subcard">
+          <h3>Probabilités</h3>
+
+          <div class="bar-block">
+            <div class="bar-head">
+              <span><strong>P(bad)</strong> – risque de défaut</span>
+              <span>{{ "%.1f"|format(result.probability_bad * 100) }}%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill bad" style="width: {{ (result.probability_bad * 100) | round(1) }}%;"></div>
+            </div>
+
+            {% if result.threshold is not none %}
+            <div class="threshold-line" style="left: {{ (result.threshold * 100) | round(1) }}%;">
+              <span class="threshold-label">Seuil {{ "%.0f"|format(result.threshold * 100) }}%</span>
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="bar-block">
+            <div class="bar-head">
+              <span><strong>P(good)</strong> – solvabilité</span>
+              <span>{{ "%.1f"|format(result.probability_good * 100) }}%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill good" style="width: {{ (result.probability_good * 100) | round(1) }}%;"></div>
+            </div>
+          </div>
+
+          <p class="note">
+            Lecture : plus la barre <strong>P(bad)</strong> est longue, plus le risque est élevé.
+            La ligne “Seuil” illustre la règle métier (rejet si P(bad) ≥ seuil).
+          </p>
+        </div>
+
         <p class="note">
           *Les seuils de risque (low/medium/high) sont basés sur P(bad) et peuvent être ajustés.
         </p>

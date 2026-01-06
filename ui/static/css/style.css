@@ -146,3 +146,56 @@ select {
 input[type="range"] {
   width: 100%;
 }
+
+.bars h3 {
+  margin: 0 0 10px 0;
+}
+
+.bar-block {
+  position: relative;
+  margin: 12px 0 18px 0;
+}
+
+.bar-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.bar-track {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  background: #eee;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.bar-fill.bad { background: #c00; }
+.bar-fill.good { background: #0a7; }
+
+.threshold-line {
+  position: absolute;
+  top: 26px;
+  transform: translateX(-50%);
+  height: 18px;
+  width: 2px;
+  background: #111;
+}
+
+.threshold-label {
+  position: absolute;
+  top: 18px;
+  left: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
