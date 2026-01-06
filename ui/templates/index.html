@@ -52,6 +52,45 @@
             <div class="kpi-value">{{ "%.2f"|format(result.threshold) }}</div>
           </div>
         </div>
+
+        <div class="badges">
+          <span class="pill {{ result.risk_level }}">RISK: {{ result.risk_level | upper }}</span>
+          <span class="pill decision {{ result.business_decision }}">DECISION: {{ result.business_decision | upper }}</span>
+          <span class="pill neutral">THRESHOLD: {{ "%.0f"|format(result.threshold * 100) }}%</span>
+        </div>
+
+        <p class="explain">
+          Décision métier : <strong>{{ result.business_decision | upper }}</strong>
+          car <strong>P(bad)={{ "%.1f"|format(result.probability_bad * 100) }}%</strong>
+          {% if result.probability_bad >= result.threshold %}
+            est ≥
+          {% else %}
+            est &lt;
+          {% endif %}
+          <strong>seuil={{ "%.0f"|format(result.threshold * 100) }}%</strong>.
+        </p>
+
+        <div class="gauge-card card subcard">
+          <h3>Score (P(bad))</h3>
+
+          <div class="gauge-wrap">
+            <div
+              class="gauge"
+              style="--p: {{ (result.probability_bad * 100) | round(1) }}; --t: {{ (result.threshold * 100) | round(1) }};"
+            >
+              <div class="gauge-inner">
+                <div class="gauge-value">{{ "%.0f"|format(result.probability_bad * 100) }}%</div>
+                <div class="gauge-label">P(bad)</div>
+              </div>
+            </div>
+
+            <div class="gauge-legend">
+              <div><span class="dot bad"></span> Risque (bad)</div>
+              <div><span class="dot threshold"></span> Seuil métier</div>
+            </div>
+          </div>
+        </div>
+
         <div class="bars card subcard">
           <h3>Probabilités</h3>
 

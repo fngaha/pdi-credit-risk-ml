@@ -199,3 +199,120 @@ input[type="range"] {
   color: var(--muted);
   white-space: nowrap;
 }
+
+/* Badges */
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: #111;
+}
+
+.pill.low { border-color: #bfe6bf; color: #0a7; }
+.pill.medium { border-color: #ffe0b3; color: #c80; }
+.pill.high { border-color: #ffb3b3; color: #c00; }
+
+.pill.decision.accept { border-color: #bfe6bf; color: #0a7; }
+.pill.decision.reject { border-color: #ffb3b3; color: #c00; }
+
+.pill.neutral { color: var(--muted); }
+
+.explain {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Gauge */
+.gauge-card h3 {
+  margin: 0 0 10px 0;
+}
+
+.gauge-wrap {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.gauge {
+  --p: 0;   /* probability bad % */
+  --t: 50;  /* threshold % */
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  position: relative;
+  background:
+    conic-gradient(#c00 calc(var(--p) * 1%), #eee 0);
+  border: 1px solid var(--border);
+}
+
+.gauge::after {
+  /* marker threshold (a small dot on the ring) */
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #111;
+  top: 50%;
+  left: 50%;
+  transform:
+    rotate(calc((var(--t) * 3.6deg) - 90deg))
+    translate(62px)
+    rotate(calc(-1 * ((var(--t) * 3.6deg) - 90deg)));
+}
+
+.gauge-inner {
+  position: absolute;
+  inset: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.gauge-value {
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.gauge-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.gauge-legend {
+  font-size: 13px;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.dot.bad { background: #c00; }
+.dot.threshold { background: #111; }
