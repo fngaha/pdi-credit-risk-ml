@@ -28,6 +28,7 @@ MODEL_PATH = Path(
 pipeline = load_model(MODEL_PATH)
 
 DEFAULT_FORM = {
+    "threshold": 0.5,
     "duration": 24,
     "credit_amount": 5000,
     "installment_commitment": 3,
@@ -99,6 +100,9 @@ def home():
 @app.post("/ui/predict")
 def ui_predict():
     form_payload = request.form.to_dict()
+    threshold_str = form_payload.get("threshold", "0.5")
+    threshold = float(threshold_str)
+    threshold = max(0.0, min(1.0, threshold))  # clamp sécurité
 
     try:
         for k in [
@@ -139,6 +143,7 @@ def ui_predict():
         )
 
     result = predict_single(pipeline, req.model_dump())
+    business_decision = "reject" if result.probability_bad >= threshold else "accept"
 
     if result.probability_bad >= 0.7:
         risk_level = "high"
@@ -154,8 +159,10 @@ def ui_predict():
             "probability_bad": result.probability_bad,
             "probability_good": result.probability_good,
             "risk_level": risk_level,
+            "threshold": threshold,
+            "business_decision": business_decision,
         },
-        form=req.model_dump(),
+        form=req.model_dump() | {"threshold": threshold},
         categorical_options=get_categorical_values(),
     )
 

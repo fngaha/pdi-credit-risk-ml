@@ -126,3 +126,23 @@ select {
   border-radius: 10px;
   background: #fff;
 }
+
+.subcard {
+  margin: 12px 0;
+}
+
+.slider-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.decision.accept { color: #0a7; }
+.decision.reject { color: #c00; }
+
+input[type="range"] {
+  width: 100%;
+}

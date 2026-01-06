@@ -41,6 +41,16 @@
             <div class="kpi-title">P(good)</div>
             <div class="kpi-value">{{ "%.3f"|format(result.probability_good) }}</div>
           </div>
+          <div>
+            <div class="kpi-title">Décision métier</div>
+            <div class="kpi-value decision {{ result.business_decision }}">
+              {{ result.business_decision | upper }}
+            </div>
+          </div>
+          <div>
+            <div class="kpi-title">Seuil</div>
+            <div class="kpi-value">{{ "%.2f"|format(result.threshold) }}</div>
+          </div>
         </div>
         <p class="note">
           *Les seuils de risque (low/medium/high) sont basés sur P(bad) et peuvent être ajustés.
@@ -244,6 +254,35 @@
               {% endfor %}
             </select>
           </label>
+        </div>
+
+        <div class="card subcard">
+          <h3>Seuil métier</h3>
+
+          <label>
+            Seuil de rejet (P(bad) ≥ seuil)
+            <input
+              type="range"
+              name="threshold"
+              min="0"
+              max="1"
+              step="0.01"
+              value="{{ form.threshold if form and form.threshold is not none else 0.5 }}"
+              oninput="document.getElementById('thresholdValue').textContent = this.value"
+            />
+            <div class="slider-row">
+              <span>0.00</span>
+              <strong id="thresholdValue">
+                {{ form.threshold if form and form.threshold is not none else 0.5 }}
+              </strong>
+              <span>1.00</span>
+            </div>
+          </label>
+
+          <p class="hint">
+            Plus le seuil est bas, plus on rejette de dossiers (réduction du risque, mais plus de faux positifs).
+            Plus le seuil est haut, plus on accepte (meilleure conversion, mais plus de risque).
+          </p>
         </div>
 
         <div class="actions">
