@@ -316,3 +316,10 @@ input[type="range"] {
 
 .dot.bad { background: #c00; }
 .dot.threshold { background: #111; }
+
+.demo-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}

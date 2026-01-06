@@ -6,6 +6,7 @@ from pathlib import Path
 from flask import Flask, jsonify, render_template, request
 from pydantic import ValidationError
 
+from api.demo_profiles import DEMO_PROFILES
 from api.schemas import CreditRiskRequest, CreditRiskResponse
 from credit_g_ml.inference import load_model, predict_single
 from credit_g_ml.metadata import get_categorical_values
@@ -164,6 +165,43 @@ def ui_predict():
         },
         form=req.model_dump() | {"threshold": threshold},
         categorical_options=get_categorical_values(),
+    )
+
+
+@app.get("/demo/<level>")
+def demo(level: str):
+    if level not in DEMO_PROFILES:
+        return "Unknown demo profile", 404
+
+    threshold = 0.5
+    payload = DEMO_PROFILES[level]
+
+    req = CreditRiskRequest(**payload)
+    result = predict_single(pipeline, req.model_dump())
+
+    business_decision = "reject" if result.probability_bad >= threshold else "accept"
+
+    if result.probability_bad >= 0.7:
+        risk_level = "high"
+    elif result.probability_bad >= 0.4:
+        risk_level = "medium"
+    else:
+        risk_level = "low"
+
+    categorical_options = get_categorical_values()
+
+    return render_template(
+        "index.html",
+        result={
+            "label": result.label,
+            "probability_bad": result.probability_bad,
+            "probability_good": result.probability_good,
+            "risk_level": risk_level,
+            "threshold": threshold,
+            "business_decision": business_decision,
+        },
+        form=req.model_dump() | {"threshold": threshold},
+        categorical_options=categorical_options,
     )
 
 
