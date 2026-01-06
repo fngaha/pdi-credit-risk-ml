@@ -75,7 +75,7 @@
 
           <div class="gauge-wrap">
             <div
-              class="gauge"
+              class="gauge risk-{{ result.risk_level }}"
               style="--p: {{ (result.probability_bad * 100) | round(1) }}; --t: {{ (result.threshold * 100) | round(1) }};"
             >
               <div class="gauge-inner">
@@ -85,7 +85,7 @@
             </div>
 
             <div class="gauge-legend">
-              <div><span class="dot bad"></span> Risque (bad)</div>
+              <div><span class="dot risk-{{ result.risk_level }}"></span> Risque (bad)</div>
               <div><span class="dot threshold"></span> Seuil métier</div>
             </div>
           </div>
@@ -100,7 +100,10 @@
               <span>{{ "%.1f"|format(result.probability_bad * 100) }}%</span>
             </div>
             <div class="bar-track">
-              <div class="bar-fill bad" style="width: {{ (result.probability_bad * 100) | round(1) }}%;"></div>
+              <div class="bar-fill bad risk-{{ result.risk_level }}"
+              style="width: {{ (result.probability_bad * 100) | round(1) }}%;">
+            </div>
+
             </div>
 
             {% if result.threshold is not none %}
@@ -137,6 +140,7 @@
         <a href="/demo/medium" class="btn-secondary">Démo MEDIUM</a>
         <a href="/demo/high" class="btn-secondary">Démo HIGH</a>
       </div>
+
 
       <form class="card" method="post" action="/ui/predict">
         <h2>Informations client</h2>

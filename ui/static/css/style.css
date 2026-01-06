@@ -247,16 +247,17 @@ input[type="range"] {
   flex-wrap: wrap;
 }
 
+/* Gauge base */
 .gauge {
-  --p: 0;   /* probability bad % */
-  --t: 50;  /* threshold % */
+  --risk-color: #c00; /* fallback */
   width: 140px;
   height: 140px;
   border-radius: 50%;
   position: relative;
   background:
-    conic-gradient(#c00 calc(var(--p) * 1%), #eee 0);
+    conic-gradient(var(--risk-color) calc(var(--p) * 1%), #eee 0);
   border: 1px solid var(--border);
+  transition: background 0.3s ease;
 }
 
 .gauge::after {
@@ -275,6 +276,20 @@ input[type="range"] {
     rotate(calc(-1 * ((var(--t) * 3.6deg) - 90deg)));
 }
 
+/* Couleurs par niveau de risque */
+.gauge.risk-low {
+  --risk-color: #0a7;
+}
+
+.gauge.risk-medium {
+  --risk-color: #c80;
+}
+
+.gauge.risk-high {
+  --risk-color: #c00;
+}
+
+/* Intérieur de la jauge */
 .gauge-inner {
   position: absolute;
   inset: 14px;
@@ -287,10 +302,15 @@ input[type="range"] {
   align-items: center;
 }
 
+/* Valeur centrale colorée */
 .gauge-value {
   font-size: 28px;
   font-weight: 800;
 }
+
+.gauge.risk-low .gauge-value { color: #0a7; }
+.gauge.risk-medium .gauge-value { color: #c80; }
+.gauge.risk-high .gauge-value { color: #c00; }
 
 .gauge-label {
   font-size: 12px;
@@ -314,12 +334,21 @@ input[type="range"] {
   vertical-align: middle;
 }
 
-.dot.bad { background: #c00; }
 .dot.threshold { background: #111; }
 
+/* Dot risque dynamique */
+.dot.risk-low { background: #0a7; }
+.dot.risk-medium { background: #c80; }
+.dot.risk-high { background: #c00; }
+
+/* Boutons de démo */
 .demo-actions {
   display: flex;
   gap: 10px;
   margin-bottom: 14px;
   flex-wrap: wrap;
 }
+
+.bar-fill.bad.risk-low { background: #0a7; }
+.bar-fill.bad.risk-medium { background: #c80; }
+.bar-fill.bad.risk-high { background: #c00; }
