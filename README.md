@@ -184,3 +184,33 @@ Then open:
   - http://127.0.0.1:5001/demo/medium
 
   - http://127.0.0.1:5001/demo/high
+
+## 🎤 Live demo script (3 minutes)
+
+### 1. Contexte (30 sec)
+Ce projet illustre un cas de scoring crédit basé sur le dataset *credit-g*.
+Il combine un modèle de machine learning, une API de prédiction et une interface métier.
+
+### 2. Vue décideur – risque faible (30 sec)
+Ouvrir :
+http://localhost:5001/demo/full/low
+
+→ Client à faible risque, décision d’acceptation immédiate.
+
+### 3. Cas intermédiaire & règle métier (45 sec)
+Ouvrir :
+http://localhost:5001/demo/full/medium
+
+→ Le score est proche du seuil.
+→ La décision dépend de la stratégie métier (seuil configurable).
+
+### 4. Cas à haut risque (45 sec)
+Ouvrir :
+http://localhost:5001/demo/full/high
+
+→ Client à risque élevé, rejet automatique.
+→ Visualisation immédiate via jauge et indicateurs.
+
+### 5. Message clé (30 sec)
+Le modèle fournit un score probabiliste,
+mais la décision finale reste pilotée par des règles métier explicites.

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Credit Risk – Live Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <style>
+    body { background: #fafafa; }
+    .fullscreen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+    }
+    .demo-nav {
+      display: flex;
+      gap: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="fullscreen">
+    <h1>Credit Risk Scoring – Live Demo</h1>
+
+    <div class="demo-nav">
+      <a class="btn-secondary" href="/demo/full/low">LOW</a>
+      <a class="btn-secondary" href="/demo/full/medium">MEDIUM</a>
+      <a class="btn-secondary" href="/demo/full/high">HIGH</a>
+    </div>
+
+    {% include "partials/gauge.html" %}
+    {% include "partials/bars.html" %}
+    {% include "partials/badges.html" %}
+
+    <p class="note">
+      Décision métier basée sur un seuil configurable appliqué à P(bad).
+    </p>
+  </div>
+</body>
+</html>

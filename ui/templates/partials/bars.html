@@ -1,0 +1,42 @@
+<div class="bars card subcard">
+  <h3>Probabilités</h3>
+
+  <!-- P(bad) -->
+  <div class="bar-block">
+    <div class="bar-head">
+      <span><strong>P(bad)</strong></span>
+      <span>{{ "%.1f"|format(result.probability_bad * 100) }}%</span>
+    </div>
+
+    <div class="bar-track">
+      <div
+        class="bar-fill bad risk-{{ result.risk_level }}"
+        style="width: {{ (result.probability_bad * 100) | round(1) }}%;"
+      ></div>
+    </div>
+
+    <div
+      class="threshold-line"
+      style="left: {{ (result.threshold * 100) | round(1) }}%;"
+    >
+      <span class="threshold-label">
+        Seuil {{ "%.0f"|format(result.threshold * 100) }}%
+      </span>
+    </div>
+  </div>
+
+  <!-- P(good) -->
+  <div class="bar-block">
+    <div class="bar-head">
+      <span><strong>P(good)</strong></span>
+      <span>{{ "%.1f"|format(result.probability_good * 100) }}%</span>
+    </div>
+
+    <div class="bar-track">
+      <div
+        class="bar-fill good"
+        style="width: {{ (result.probability_good * 100) | round(1) }}%;"
+      ></div>
+    </div>
+  </div>
+</div>

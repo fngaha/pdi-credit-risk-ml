@@ -205,6 +205,40 @@ def demo(level: str):
     )
 
 
+@app.get("/demo/full/<level>")
+def demo_full(level: str):
+    if level not in DEMO_PROFILES:
+        return "Unknown demo profile", 404
+
+    threshold = 0.5
+    payload = DEMO_PROFILES[level]
+
+    req = CreditRiskRequest(**payload)
+    result = predict_single(pipeline, req.model_dump())
+
+    business_decision = "reject" if result.probability_bad >= threshold else "accept"
+
+    if result.probability_bad >= 0.7:
+        risk_level = "high"
+    elif result.probability_bad >= 0.4:
+        risk_level = "medium"
+    else:
+        risk_level = "low"
+
+    return render_template(
+        "demo_full.html",
+        result={
+            "label": result.label,
+            "probability_bad": result.probability_bad,
+            "probability_good": result.probability_good,
+            "risk_level": risk_level,
+            "threshold": threshold,
+            "business_decision": business_decision,
+        },
+        current_level=level,
+    )
+
+
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "5000"))
     app.run(host="0.0.0.0", port=port, debug=False)

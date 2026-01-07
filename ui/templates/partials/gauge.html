@@ -1,0 +1,29 @@
+<div class="gauge-card card subcard">
+  <h3>Score (P(bad))</h3>
+
+  <div class="gauge-wrap">
+    <div
+      class="gauge risk-{{ result.risk_level }}"
+      style="--p: {{ (result.probability_bad * 100) | round(1) }};
+             --t: {{ (result.threshold * 100) | round(1) }};"
+    >
+      <div class="gauge-inner">
+        <div class="gauge-value">
+          {{ "%.0f"|format(result.probability_bad * 100) }}%
+        </div>
+        <div class="gauge-label">P(bad)</div>
+      </div>
+    </div>
+
+    <div class="gauge-legend">
+      <div class="legend-item risk-{{ result.risk_level }}">
+        <span class="dot risk-{{ result.risk_level }}"></span>
+        Risque (bad)
+      </div>
+      <div class="legend-item">
+        <span class="dot threshold"></span>
+        Seuil métier
+      </div>
+    </div>
+  </div>
+</div>

@@ -53,75 +53,12 @@
           </div>
         </div>
 
-        <div class="badges">
-          <span class="pill {{ result.risk_level }}">RISK: {{ result.risk_level | upper }}</span>
-          <span class="pill decision {{ result.business_decision }}">DECISION: {{ result.business_decision | upper }}</span>
-          <span class="pill neutral">THRESHOLD: {{ "%.0f"|format(result.threshold * 100) }}%</span>
-        </div>
-
-        <p class="explain">
-          Décision métier : <strong>{{ result.business_decision | upper }}</strong>
-          car <strong>P(bad)={{ "%.1f"|format(result.probability_bad * 100) }}%</strong>
-          {% if result.probability_bad >= result.threshold %}
-            est ≥
-          {% else %}
-            est &lt;
+        <div>
+          {% if result %}
+            {% include "partials/gauge.html" %}
+            {% include "partials/bars.html" %}
+            {% include "partials/badges.html" %}
           {% endif %}
-          <strong>seuil={{ "%.0f"|format(result.threshold * 100) }}%</strong>.
-        </p>
-
-        <div class="gauge-card card subcard">
-          <h3>Score (P(bad))</h3>
-
-          <div class="gauge-wrap">
-            <div
-              class="gauge risk-{{ result.risk_level }}"
-              style="--p: {{ (result.probability_bad * 100) | round(1) }}; --t: {{ (result.threshold * 100) | round(1) }};"
-            >
-              <div class="gauge-inner">
-                <div class="gauge-value">{{ "%.0f"|format(result.probability_bad * 100) }}%</div>
-                <div class="gauge-label">P(bad)</div>
-              </div>
-            </div>
-
-            <div class="gauge-legend">
-              <div><span class="dot risk-{{ result.risk_level }}"></span> Risque (bad)</div>
-              <div><span class="dot threshold"></span> Seuil métier</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bars card subcard">
-          <h3>Probabilités</h3>
-
-          <div class="bar-block">
-            <div class="bar-head">
-              <span><strong>P(bad)</strong> – risque de défaut</span>
-              <span>{{ "%.1f"|format(result.probability_bad * 100) }}%</span>
-            </div>
-            <div class="bar-track">
-              <div class="bar-fill bad risk-{{ result.risk_level }}"
-              style="width: {{ (result.probability_bad * 100) | round(1) }}%;">
-            </div>
-
-            </div>
-
-            {% if result.threshold is not none %}
-            <div class="threshold-line" style="left: {{ (result.threshold * 100) | round(1) }}%;">
-              <span class="threshold-label">Seuil {{ "%.0f"|format(result.threshold * 100) }}%</span>
-            </div>
-            {% endif %}
-          </div>
-
-          <div class="bar-block">
-            <div class="bar-head">
-              <span><strong>P(good)</strong> – solvabilité</span>
-              <span>{{ "%.1f"|format(result.probability_good * 100) }}%</span>
-            </div>
-            <div class="bar-track">
-              <div class="bar-fill good" style="width: {{ (result.probability_good * 100) | round(1) }}%;"></div>
-            </div>
-          </div>
 
           <p class="note">
             Lecture : plus la barre <strong>P(bad)</strong> est longue, plus le risque est élevé.

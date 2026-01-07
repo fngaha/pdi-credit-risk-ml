@@ -1,0 +1,25 @@
+<div class="badges">
+  <span class="pill {{ result.risk_level }}">
+    RISK: {{ result.risk_level | upper }}
+  </span>
+
+  <span class="pill decision {{ result.business_decision }}">
+    DECISION: {{ result.business_decision | upper }}
+  </span>
+
+  <span class="pill neutral">
+    THRESHOLD: {{ "%.0f"|format(result.threshold * 100) }}%
+  </span>
+</div>
+
+<p class="explain">
+  Décision métier :
+  <strong>{{ result.business_decision | upper }}</strong>
+  car <strong>P(bad)={{ "%.1f"|format(result.probability_bad * 100) }}%</strong>
+  {% if result.probability_bad >= result.threshold %}
+    ≥
+  {% else %}
+    &lt;
+  {% endif %}
+  <strong>seuil={{ "%.0f"|format(result.threshold * 100) }}%</strong>.
+</p>
