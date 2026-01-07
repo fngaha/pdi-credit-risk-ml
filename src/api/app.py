@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Any
 
 from flask import Flask, jsonify, render_template, request
 from pydantic import ValidationError
@@ -26,7 +27,16 @@ MODEL_PATH = Path(
         str(PROJECT_ROOT / "models" / "logistic_regression_pipeline.joblib"),
     )
 )
-pipeline = load_model(MODEL_PATH)
+
+_pipeline: Any | None = None
+
+
+def get_pipeline():
+    global _pipeline
+    if _pipeline is None:
+        _pipeline = load_model(MODEL_PATH)
+    return _pipeline
+
 
 DEFAULT_FORM = {
     "threshold": 0.5,
@@ -69,6 +79,8 @@ def predict():
         return jsonify({"error": "validation_error", "details": e.errors()}), 422
     except Exception:
         return jsonify({"error": "invalid_json"}), 400
+
+    pipeline = get_pipeline()
 
     result = predict_single(pipeline, req.model_dump())
 
@@ -143,6 +155,8 @@ def ui_predict():
             400,
         )
 
+    pipeline = get_pipeline()
+
     result = predict_single(pipeline, req.model_dump())
     business_decision = "reject" if result.probability_bad >= threshold else "accept"
 
@@ -175,6 +189,8 @@ def demo(level: str):
 
     threshold = 0.5
     payload = DEMO_PROFILES[level]
+
+    pipeline = get_pipeline()
 
     req = CreditRiskRequest(**payload)
     result = predict_single(pipeline, req.model_dump())
@@ -212,6 +228,8 @@ def demo_full(level: str):
 
     threshold = 0.5
     payload = DEMO_PROFILES[level]
+
+    pipeline = get_pipeline()
 
     req = CreditRiskRequest(**payload)
     result = predict_single(pipeline, req.model_dump())

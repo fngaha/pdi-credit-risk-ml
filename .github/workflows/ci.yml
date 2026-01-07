@@ -29,3 +29,6 @@ jobs:
 
       - name: Pytest
         run: pytest -q
+
+      - name: Ensure PYTHONPATH
+        run: echo "PYTHONPATH=$GITHUB_WORKSPACE/src" >> $GITHUB_ENV
