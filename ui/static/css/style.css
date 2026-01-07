@@ -352,3 +352,22 @@ input[type="range"] {
 .bar-fill.bad.risk-low { background: #0a7; }
 .bar-fill.bad.risk-medium { background: #c80; }
 .bar-fill.bad.risk-high { background: #c00; }
+
+.demo-sep {
+  width: 1px;
+  height: 28px;
+  background: var(--border);
+  display: inline-block;
+  margin: 0 4px;
+}
+
+.btn-demo {
+  border-radius: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 14px;
+}
