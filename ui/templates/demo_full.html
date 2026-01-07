@@ -24,12 +24,16 @@
 
 <body>
   <div class="fullscreen">
-    <h1>Credit Risk Scoring – Live Demo</h1>
+    <div class="demo-header">
+      <h1>Credit Risk Scoring</h1>
+      <span class="demo-badge">FULL DEMO</span>
+    </div>
+
 
   <div class="demo-nav">
-    <a class="btn-secondary" href="/demo/full/low">LOW</a>
-    <a class="btn-secondary" href="/demo/full/medium">MEDIUM</a>
-    <a class="btn-secondary" href="/demo/full/high">HIGH</a>
+    <a class="btn-secondary {% if current_level == 'low' %}active{% endif %}" href="/demo/full/low">LOW</a>
+    <a class="btn-secondary {% if current_level == 'medium' %}active{% endif %}" href="/demo/full/medium">MEDIUM</a>
+    <a class="btn-secondary {% if current_level == 'high' %}active{% endif %}" href="/demo/full/high">HIGH</a>
 
     <span class="demo-sep"></span>
 

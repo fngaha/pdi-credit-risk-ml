@@ -371,3 +371,28 @@ input[type="range"] {
   text-decoration: none;
   font-size: 14px;
 }
+
+/* Full demo header badge */
+.demo-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.demo-badge {
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #111;
+  color: #fff;
+  letter-spacing: 0.6px;
+}
+
+/* Active state for demo level buttons */
+.btn-secondary.active {
+  background: #111;
+  color: #fff;
+}
