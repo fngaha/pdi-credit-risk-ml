@@ -391,8 +391,25 @@ input[type="range"] {
   letter-spacing: 0.6px;
 }
 
-/* Active state for demo level buttons */
-.btn-secondary.active {
-  background: #111;
+.fullscreen.level-low .demo-badge { background: #0a7; border-color: #0a7; }
+.fullscreen.level-medium .demo-badge { background: #c80; border-color: #c80; }
+.fullscreen.level-high .demo-badge { background: #c00; border-color: #c00; }
+
+/* Active button colored by current demo level */
+.fullscreen.level-low .demo-nav .btn-secondary.active {
+  background: #0a7;
   color: #fff;
+  border-color: #0a7;
+}
+
+.fullscreen.level-medium .demo-nav .btn-secondary.active {
+  background: #c80;
+  color: #fff;
+  border-color: #c80;
+}
+
+.fullscreen.level-high .demo-nav .btn-secondary.active {
+  background: #c00;
+  color: #fff;
+  border-color: #c00;
 }
