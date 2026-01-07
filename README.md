@@ -159,3 +159,28 @@ En cas d’erreur, l’API retourne une réponse `422` avec le détail des champ
 - Le pipeline inclut le préprocessing et le modèle (aucune transformation manuelle requise côté client).
 
 - Cette API constitue une base démontrable pour une intégration UI ou un déploiement ultérieur.
+
+## Run with Docker
+
+### Build
+
+```bash
+docker build -t pdi-credit-risk-ml .
+```
+### Run
+```
+docker run --rm -p 5001:5000 -e PORT=5000 pdi-credit-risk-ml
+```
+Then open:
+
+- UI: http://127.0.0.1:5001/
+
+- Health: http://127.0.0.1:5001/health
+
+- Demo profiles:
+
+  - http://127.0.0.1:5001/demo/low
+
+  - http://127.0.0.1:5001/demo/medium
+
+  - http://127.0.0.1:5001/demo/high
