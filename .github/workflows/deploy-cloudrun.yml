@@ -28,4 +28,5 @@ jobs:
             --source . \
             --region "${{ secrets.GCP_REGION }}" \
             --project "${{ secrets.GCP_PROJECT_ID }}" \
-            --allow-unauthenticated
+            --allow-unauthenticated \
+            --quiet
