@@ -3,75 +3,93 @@
 ![Deploy to Cloud Run](https://github.com/fngaha/pdi-credit-risk-ml/actions/workflows/deploy-cloudrun.yml/badge.svg)
 [![Live Demo](https://img.shields.io/badge/Live-Demo-green)](https://pdi-credit-risk-ml-mbn4mquhua-ew.a.run.app)
 
-Projet de fin de formation – Développeur orienté IA
-Score de risque crédit basé sur le dataset **credit-g** (OpenML), développé selon la méthodologie **CRISP-DM**.
+**Projet de fin de formation – Développeur orienté IA**
+
+Scoring de risque crédit basé sur le dataset **credit-g** (OpenML), développé selon la méthodologie **CRISP-DM** et déployé en production sur **Google Cloud Run** via CI/CD GitHub Actions.
 
 ## Objectifs
 
-- Explorer et préparer les données (EDA).
-- Entraîner un modèle de machine learning pour prédire le risque de défaut.
-- Exposer le modèle via une **API Flask**.
-- Proposer une **interface web simple** pour scorer un client.
-- Mettre en place des bonnes pratiques :
-  - formatage avec **black**,
-  - linting avec **ruff**,
-  - hooks **pre-commit**,
-  - tests automatisés avec **pytest**.
+- Explorer et préparer les données **(EDA)**
 
-## Structure du projet
+- Entraîner un modèle de machine learning pour prédire le risque de défaut
 
-(à compléter au fur et à mesure)
+- Exposer le modèle via une **API Flask**
 
-## Résultats – Baseline
+- Proposer une **interface web métier** pour le scoring client
+
+- Mettre en œuvre des **bonnes pratiques professionnelles** :
+
+  - formatage du code avec **black**
+
+  - linting avec **ruff**
+
+  - hooks **pre-commit**
+
+  - tests automatisés avec **pytest**
+
+  - conteneurisation **Docker**
+
+  - déploiement **Cloud Run** (keyless via **WIF**)
+
+## Architecture du projet
+
+```text
+src/
+ ├── api/                # API Flask
+ ├── credit_g_ml/        # Pipeline ML (data, preprocessing, modeling)
+scripts/                 # Entraînement et téléchargement du dataset
+ui/                      # Interface web (dashboard)
+data/                    # Données (téléchargées au build)
+models/                  # Modèle entraîné (dans l’image Docker)
+reports/                 # Résultats & visualisations
+tests/                   # Tests unitaires
+```
+
+## Résultats – Modèle baseline
 
 Le modèle baseline (Logistic Regression) atteint :
 
 - ROC AUC ≈ 0.78
-- Bon rappel sur la classe "bad" (objectif métier)
+- Bon rappel sur la classe "bad" (objectif métier prioritaire)
 
-Voir :
+Rapports disponibles :
 - `reports/baseline_logistic_regression.md`
 - `reports/roc_curve_logistic_regression.png`
 
 ## API – Credit Risk Scoring
-### Prérequis
 
-- Environnement conda actif :
+### Démarrage local
 
-```conda activate pdi-credit-risk-m```
+Activer l’environnement conda :
 
-- Modèle entraîné (une fois) :
-
-```python scripts/train_model.py```
-
-Cela génère le fichier :
-
-```models/logistic_regression_pipeline.jobli```
-
-### Lancer l’API localement
-
-Depuis la racine du projet :
-
+```bash
+conda activate pdi-credit-risk-ml
 ```
+
+Lancer l’API :
+
+```bash
 export PYTHONPATH=src
 python -m api.app
 ```
 
+API disponible sur :
 
-Le serveur démarre par défaut sur :
+```cpp
+http://127.0.0.1:5000
+```
 
-```http://127.0.0.1:5000```
+### Endpoint de santé
 
-Endpoint de santé
+```http
+GET /health
+```
 
-GET ```/health```
+```bash
+curl http://127.0.0.1:5000/health
+```
 
-Permet de vérifier que l’API est opérationnelle.
-
-```curl http://127.0.0.1:5000/health```
-
-
-Réponse attendue :
+Réponse :
 
 ```json
 {
@@ -81,13 +99,13 @@ Réponse attendue :
 
 ### Endpoint de prédiction
 
-POST ```/predict```
-
-Retourne une prédiction de risque crédit pour un client donné.
-
-Exemple de requête
-
+```http
+POST /predict
 ```
+
+Exemple de requête :
+
+```bash
 curl -X POST http://127.0.0.1:5000/predict \
   -H "Content-Type: application/json" \
   -d '{
@@ -114,7 +132,7 @@ curl -X POST http://127.0.0.1:5000/predict \
   }'
 ```
 
-Exemple de réponse
+Exemple de réponse :
 
 ```json
 {
@@ -125,13 +143,13 @@ Exemple de réponse
 }
 ```
 
-Champs de la réponse
+Champs retournés :
 
-- `label` : classe prédite par le modèle (`good` ou `bad`)
+- `label` : classe prédite (`good` ou `bad`)
 
-- `probability_bad` : probabilité estimée d’être un mauvais payeur
+- `probability_bad` : probabilité de défaut
 
-- `probability_good` : probabilité estimée d’être un bon payeur
+- `probability_good` : probabilité de non défaut
 
 - `risk_level` :
 
@@ -141,40 +159,36 @@ Champs de la réponse
 
   - `high` : risque élevé
 
-Le niveau de risque est déterminé à partir de la probabilité `bad` selon des seuils simples, configurables dans l’API.
+> Le modèle fournit un **score probabiliste**.<br>
+> La décision finale est pilotée par **des règles métier explicites** (seuils configurables).
 
 ### Validation des entrées
 
-Les données d’entrée sont validées côté API :
+Les entrées sont validées côté API :
 
-- types (numérique / chaîne),
+- types des champs
 
-- bornes sur les variables numériques,
+- bornes numériques
 
-- présence obligatoire de toutes les features attendues.
+- présence obligatoire de toutes les features
 
-En cas d’erreur, l’API retourne une réponse `422` avec le détail des champs invalides.
+En cas d’erreur → réponse **HTTP 422** avec détail.
 
-### Notes
-
-- Le modèle est chargé au démarrage de l’API.
-
-- Le pipeline inclut le préprocessing et le modèle (aucune transformation manuelle requise côté client).
-
-- Cette API constitue une base démontrable pour une intégration UI ou un déploiement ultérieur.
-
-## Run with Docker
+## Exécution avec Docker
 
 ### Build
 
 ```bash
 docker build -t pdi-credit-risk-ml .
 ```
+
 ### Run
-```
+
+```bash
 docker run --rm -p 5001:5000 -e PORT=5000 pdi-credit-risk-ml
 ```
-Then open:
+
+Accès :
 
 - UI: http://127.0.0.1:5001/
 
@@ -182,69 +196,72 @@ Then open:
 
 - Demo profiles:
 
-  - http://127.0.0.1:5001/demo/low
+  - /demo/low
 
-  - http://127.0.0.1:5001/demo/medium
+  - /demo/medium
 
-  - http://127.0.0.1:5001/demo/high
+  - /demo/high
 
-## API security (minimal)
+## Sécurité API (minimaliste)
 
-The `/predict` endpoint is protected by an API token.
+L’endpoint /predict est protégé par un token via variable d’environnement.
 
-### Header required
+### Header requis
 
 ```http
 X-API-TOKEN: your-api-token
 ```
 
-
-### Example
+Exemple :
 ```bash
 curl -X POST https://pdi-credit-risk-ml-mbn4mquhua-ew.a.run.app/predict \
   -H "Content-Type: application/json" \
   -H "X-API-TOKEN: <your-api-token>" \
   -d '{...}'
 ```
-The UI is public; only the prediction API is protected.
 
-## Live demo (Cloud Run)
+L’UI reste publique, seule l’API est protégée.
+
+## Live demo – Cloud Run
 
 https://pdi-credit-risk-ml-mbn4mquhua-ew.a.run.app
 
-- Full demo : `/demo/full/medium`
-- API : `POST /predict`
+### Script de démonstration (≈ 3 minutes)
 
-### 1. Contexte
-Ce projet illustre un cas de scoring crédit basé sur le dataset *credit-g*.
-Il combine un modèle de machine learning, une API de prédiction et une interface métier.
+1. Contexte
 
-### 2. Vue décideur – risque faible
-Ouvrir :
-https://pdi-credit-risk-ml-mbn4mquhua-ew.a.run.app/demo/full/low
+    - Cas réel de scoring crédit
 
-→ Client à faible risque, décision d’acceptation immédiate.
+    - Modèle ML + API + dashboard métier
 
-### 3. Cas intermédiaire & règle métier
-Ouvrir :
-https://pdi-credit-risk-ml-mbn4mquhua-ew.a.run.app/demo/full/medium
+2. Risque faible
 
-→ Le score est proche du seuil.
-→ La décision dépend de la stratégie métier (seuil configurable).
+    - /demo/full/low
 
-### 4. Cas à haut risque
-Ouvrir :
-https://pdi-credit-risk-ml-mbn4mquhua-ew.a.run.app/demo/full/high
+    - Acceptation immédiate
 
-→ Client à risque élevé, rejet automatique.
-→ Visualisation immédiate via jauge et indicateurs.
+3. Cas intermédiaire
 
-### 5. Message clé
-Le modèle fournit un score probabiliste,
-mais la décision finale reste pilotée par des règles métier explicites.
+    - /demo/full/medium
+
+    - Décision dépendante du seuil métier
+
+4. Risque élevé
+
+    - /demo/full/high
+
+    - Rejet automatique
+
+    - Visualisation claire (jauge, badges)
+
+### Message clé
+
+> Le modèle assiste la décision,<br>
+> mais **la décision finale reste métier**.
 
 ---
 
-Developed by **Franck O. Ngaha**
-Personal Development Project – Développeur orienté IA
+👤 Auteur<br>
+Franck O. Ngaha<br>
+Projet de développement individuel – Développeur orienté IA<br>
 © 2026
