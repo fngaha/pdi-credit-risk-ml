@@ -12,6 +12,7 @@ from api.schemas import CreditRiskRequest, CreditRiskResponse
 from credit_g_ml.inference import load_model, predict_single
 from credit_g_ml.metadata import get_categorical_values
 
+API_TOKEN = os.getenv("API_TOKEN")
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 UI_DIR = PROJECT_ROOT / "ui"
 
@@ -70,6 +71,11 @@ def health():
 
 @app.post("/predict")
 def predict():
+    # Sécurité minimale par token
+    if API_TOKEN:
+        client_token = request.headers.get("X-API-TOKEN")
+        if not client_token or client_token != API_TOKEN:
+            return jsonify({"error": "unauthorized"}), 401
     try:
         payload = request.get_json(silent=True)
         if payload is None:
@@ -105,6 +111,7 @@ def home():
     categorical_options = get_categorical_values()
     return render_template(
         "index.html",
+        api_token=os.getenv("API_TOKEN", ""),
         categorical_options=categorical_options,
         form=DEFAULT_FORM,
     )

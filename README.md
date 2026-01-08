@@ -1,5 +1,8 @@
 # pdi-credit-risk-ml
 
+![Deploy to Cloud Run](https://github.com/fngaha/pdi-credit-risk-ml/actions/workflows/deploy-cloudrun.yml/badge.svg)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-green)](https://pdi-credit-risk-ml-mbn4mquhua-ew.a.run.app)
+
 Projet de fin de formation – Développeur orienté IA
 Score de risque crédit basé sur le dataset **credit-g** (OpenML), développé selon la méthodologie **CRISP-DM**.
 
@@ -185,32 +188,63 @@ Then open:
 
   - http://127.0.0.1:5001/demo/high
 
-## 🎤 Live demo script (3 minutes)
+## API security (minimal)
 
-### 1. Contexte (30 sec)
+The `/predict` endpoint is protected by an API token.
+
+### Header required
+
+```http
+X-API-TOKEN: your-api-token
+```
+
+
+### Example
+```bash
+curl -X POST https://pdi-credit-risk-ml-mbn4mquhua-ew.a.run.app/predict \
+  -H "Content-Type: application/json" \
+  -H "X-API-TOKEN: <your-api-token>" \
+  -d '{...}'
+```
+The UI is public; only the prediction API is protected.
+
+## Live demo (Cloud Run)
+
+https://pdi-credit-risk-ml-mbn4mquhua-ew.a.run.app
+
+- Full demo : `/demo/full/medium`
+- API : `POST /predict`
+
+### 1. Contexte
 Ce projet illustre un cas de scoring crédit basé sur le dataset *credit-g*.
 Il combine un modèle de machine learning, une API de prédiction et une interface métier.
 
-### 2. Vue décideur – risque faible (30 sec)
+### 2. Vue décideur – risque faible
 Ouvrir :
-http://localhost:5001/demo/full/low
+https://pdi-credit-risk-ml-mbn4mquhua-ew.a.run.app/demo/full/low
 
 → Client à faible risque, décision d’acceptation immédiate.
 
-### 3. Cas intermédiaire & règle métier (45 sec)
+### 3. Cas intermédiaire & règle métier
 Ouvrir :
-http://localhost:5001/demo/full/medium
+https://pdi-credit-risk-ml-mbn4mquhua-ew.a.run.app/demo/full/medium
 
 → Le score est proche du seuil.
 → La décision dépend de la stratégie métier (seuil configurable).
 
-### 4. Cas à haut risque (45 sec)
+### 4. Cas à haut risque
 Ouvrir :
-http://localhost:5001/demo/full/high
+https://pdi-credit-risk-ml-mbn4mquhua-ew.a.run.app/demo/full/high
 
 → Client à risque élevé, rejet automatique.
 → Visualisation immédiate via jauge et indicateurs.
 
-### 5. Message clé (30 sec)
+### 5. Message clé
 Le modèle fournit un score probabiliste,
 mais la décision finale reste pilotée par des règles métier explicites.
+
+---
+
+Developed by **Franck O. Ngaha**
+Personal Development Project – Développeur orienté IA
+© 2026
