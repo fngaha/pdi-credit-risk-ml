@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Dict
 
 import pandas as pd
+from sklearn.calibration import CalibratedClassifierCV
 from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
@@ -80,6 +81,32 @@ def build_hist_gradient_boosting_pipeline() -> Pipeline:
         ]
     )
     return pipeline
+
+
+def build_hist_gradient_boosting_calibrated_pipeline() -> Pipeline:
+    """Pipeline HGB + calibration pour obtenir des probabilités plus fiables."""
+    preprocessor = make_preprocessor()
+
+    base_model = HistGradientBoostingClassifier(
+        learning_rate=0.05,
+        max_iter=400,
+        max_depth=None,
+        random_state=RANDOM_STATE,
+    )
+
+    # Calibration sigmoid = généralement plus robuste sur petits datasets
+    calibrated = CalibratedClassifierCV(
+        estimator=base_model,
+        method="sigmoid",
+        cv=5,
+    )
+
+    return Pipeline(
+        steps=[
+            ("preprocessor", preprocessor),
+            ("model", calibrated),
+        ]
+    )
 
 
 def train_and_evaluate(
