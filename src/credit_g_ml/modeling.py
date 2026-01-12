@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Dict
 
 import pandas as pd
+from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     classification_report,
@@ -35,6 +36,49 @@ def build_logistic_regression_pipeline() -> Pipeline:
         ]
     )
 
+    return pipeline
+
+
+def build_random_forest_pipeline() -> Pipeline:
+    """Construit un pipeline preprocessing + RandomForestClassifier."""
+    preprocessor = make_preprocessor()
+
+    model = RandomForestClassifier(
+        n_estimators=400,
+        max_depth=None,
+        min_samples_split=2,
+        min_samples_leaf=1,
+        class_weight="balanced",
+        random_state=RANDOM_STATE,
+        n_jobs=-1,
+    )
+
+    pipeline = Pipeline(
+        steps=[
+            ("preprocessor", preprocessor),
+            ("model", model),
+        ]
+    )
+    return pipeline
+
+
+def build_hist_gradient_boosting_pipeline() -> Pipeline:
+    """Construit un pipeline preprocessing + HistGradientBoostingClassifier."""
+    preprocessor = make_preprocessor()
+
+    model = HistGradientBoostingClassifier(
+        learning_rate=0.05,
+        max_iter=400,
+        max_depth=None,
+        random_state=RANDOM_STATE,
+    )
+
+    pipeline = Pipeline(
+        steps=[
+            ("preprocessor", preprocessor),
+            ("model", model),
+        ]
+    )
     return pipeline
 
 
