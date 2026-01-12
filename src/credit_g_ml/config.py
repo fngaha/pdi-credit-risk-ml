@@ -9,9 +9,11 @@ RAW_DATA_DIR = DATA_DIR / "raw"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
 MODELS_DIR = PROJECT_ROOT / "models"
 
+RANDOM_STATE = 42
+TARGET_COL = "class"
+
 # Nom du modèle à charger en production
 MODEL_NAME = os.getenv("MODEL_NAME", "logistic_regression")
 
-
-RANDOM_STATE = 42
-TARGET_COL = "class"
+# Seuil métier utilisé pour la décision (P(bad) >= seuil => bad)
+THRESHOLD_BAD = float(os.getenv("THRESHOLD_BAD", "0.50"))

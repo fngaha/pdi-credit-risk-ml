@@ -34,3 +34,5 @@ class CreditRiskResponse(BaseModel):
     probability_bad: float
     probability_good: float
     risk_level: str
+    threshold_bad: float
+    decision: str

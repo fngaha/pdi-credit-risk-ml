@@ -78,7 +78,7 @@ python -m api.app
 API disponible sur :
 
 ```cpp
-http://127.0.0.1:5000
+http://127.0.0.1:5001
 ```
 
 ### Endpoint de santé
@@ -88,7 +88,7 @@ GET /health
 ```
 
 ```bash
-curl http://127.0.0.1:5000/health
+curl http://127.0.0.1:5001/health
 ```
 
 Réponse :
@@ -108,7 +108,7 @@ POST /predict
 Exemple de requête :
 
 ```bash
-curl -X POST http://127.0.0.1:5000/predict \
+curl -X POST http://127.0.0.1:5001/predict \
   -H "Content-Type: application/json" \
   -d '{
     "duration": 24,
@@ -337,13 +337,13 @@ Start the API:
 
 ```bash
 export PYTHONPATH=src
-python -m api.app
+PORT=5001 python -m api.app
 ```
 
 The API runs on:
 
 ```cpp
-http://127.0.0.1:5000
+http://127.0.0.1:5001
 ```
 
 ### Health endpoint
@@ -353,7 +353,7 @@ GET /health
 ```
 
 ```bash
-curl http://127.0.0.1:5000/health
+curl http://127.0.0.1:5001/health
 ```
 
 Expected response:
@@ -373,7 +373,7 @@ POST /predict
 Example request:
 
 ```bash
-curl -X POST http://127.0.0.1:5000/predict \
+curl -X POST http://127.0.0.1:5001/predict \
   -H "Content-Type: application/json" \
   -d '{
     "duration": 24,

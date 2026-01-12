@@ -13,7 +13,7 @@ import joblib
 import pandas as pd
 from sklearn.pipeline import Pipeline
 
-from .config import MODEL_NAME, MODELS_DIR
+from .config import MODEL_NAME, MODELS_DIR, THRESHOLD_BAD
 from .schemas import ALL_FEATURES
 
 DEFAULT_MODEL_PATH = MODELS_DIR / f"{MODEL_NAME}_pipeline.joblib"
@@ -24,6 +24,7 @@ class PredictionResult:
     label: str
     probability_bad: float
     probability_good: float
+    threshold_bad: float
 
 
 def load_model(model_path: Path = DEFAULT_MODEL_PATH) -> Pipeline:
@@ -62,7 +63,12 @@ def predict_single(pipeline: Pipeline, payload: Dict[str, Any]) -> PredictionRes
     p_bad = float(proba_map.get("bad", 0.0))
     p_good = float(proba_map.get("good", 0.0))
 
-    # Décision label selon predict (seuil du modèle)
-    label = str(pipeline.predict(X)[0])
+    # Décision métier : label basé sur p(bad) et le seuil configurable
+    label = "bad" if p_bad >= THRESHOLD_BAD else "good"
 
-    return PredictionResult(label=label, probability_bad=p_bad, probability_good=p_good)
+    return PredictionResult(
+        label=label,
+        probability_bad=p_bad,
+        probability_good=p_good,
+        threshold_bad=THRESHOLD_BAD,
+    )

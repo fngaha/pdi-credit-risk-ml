@@ -9,6 +9,7 @@ from pydantic import ValidationError
 
 from api.demo_profiles import DEMO_PROFILES
 from api.schemas import CreditRiskRequest, CreditRiskResponse
+from credit_g_ml.config import THRESHOLD_BAD
 from credit_g_ml.inference import load_model, predict_single
 from credit_g_ml.metadata import get_categorical_values
 
@@ -32,15 +33,8 @@ MODEL_PATH = Path(
 _pipeline: Any | None = None
 
 
-def get_pipeline():
-    global _pipeline
-    if _pipeline is None:
-        _pipeline = load_model(MODEL_PATH)
-    return _pipeline
-
-
 DEFAULT_FORM = {
-    "threshold": 0.5,
+    "threshold": THRESHOLD_BAD,
     "duration": 24,
     "credit_amount": 5000,
     "installment_commitment": 3,
@@ -62,6 +56,26 @@ DEFAULT_FORM = {
     "own_telephone": "none",
     "foreign_worker": "yes",
 }
+
+
+def get_pipeline():
+    global _pipeline
+    if _pipeline is None:
+        _pipeline = load_model(MODEL_PATH)
+    return _pipeline
+
+
+def compute_risk_level(p_bad: float) -> str:
+    # Niveau de risque "informatif" (indépendant du seuil métier)
+    if p_bad >= 0.7:
+        return "high"
+    if p_bad >= 0.4:
+        return "medium"
+    return "low"
+
+
+def compute_decision(p_bad: float, threshold: float) -> str:
+    return "reject" if p_bad >= threshold else "accept"
 
 
 @app.get("/health")
@@ -89,19 +103,16 @@ def predict():
     pipeline = get_pipeline()
 
     result = predict_single(pipeline, req.model_dump())
-
-    if result.probability_bad >= 0.7:
-        risk_level = "high"
-    elif result.probability_bad >= 0.4:
-        risk_level = "medium"
-    else:
-        risk_level = "low"
+    risk_level = compute_risk_level(result.probability_bad)
+    decision = compute_decision(result.probability_bad, THRESHOLD_BAD)
 
     resp = CreditRiskResponse(
         label=result.label,
         probability_bad=result.probability_bad,
         probability_good=result.probability_good,
         risk_level=risk_level,
+        threshold_bad=THRESHOLD_BAD,
+        decision=decision,
     )
     return jsonify(resp.model_dump())
 
@@ -120,7 +131,7 @@ def home():
 @app.post("/ui/predict")
 def ui_predict():
     form_payload = request.form.to_dict()
-    threshold_str = form_payload.get("threshold", "0.5")
+    threshold_str = form_payload.get("threshold", str(THRESHOLD_BAD))
     threshold = float(threshold_str)
     threshold = max(0.0, min(1.0, threshold))  # clamp sécurité
 
@@ -166,13 +177,7 @@ def ui_predict():
 
     result = predict_single(pipeline, req.model_dump())
     business_decision = "reject" if result.probability_bad >= threshold else "accept"
-
-    if result.probability_bad >= 0.7:
-        risk_level = "high"
-    elif result.probability_bad >= 0.4:
-        risk_level = "medium"
-    else:
-        risk_level = "low"
+    risk_level = compute_risk_level(result.probability_bad)
 
     return render_template(
         "index.html",
@@ -194,7 +199,7 @@ def demo(level: str):
     if level not in DEMO_PROFILES:
         return "Unknown demo profile", 404
 
-    threshold = 0.5
+    threshold = THRESHOLD_BAD
     payload = DEMO_PROFILES[level]
 
     pipeline = get_pipeline()
@@ -203,14 +208,7 @@ def demo(level: str):
     result = predict_single(pipeline, req.model_dump())
 
     business_decision = "reject" if result.probability_bad >= threshold else "accept"
-
-    if result.probability_bad >= 0.7:
-        risk_level = "high"
-    elif result.probability_bad >= 0.4:
-        risk_level = "medium"
-    else:
-        risk_level = "low"
-
+    risk_level = compute_risk_level(result.probability_bad)
     categorical_options = get_categorical_values()
 
     return render_template(
@@ -233,7 +231,7 @@ def demo_full(level: str):
     if level not in DEMO_PROFILES:
         return "Unknown demo profile", 404
 
-    threshold = 0.5
+    threshold = THRESHOLD_BAD
     payload = DEMO_PROFILES[level]
 
     pipeline = get_pipeline()
@@ -242,13 +240,7 @@ def demo_full(level: str):
     result = predict_single(pipeline, req.model_dump())
 
     business_decision = "reject" if result.probability_bad >= threshold else "accept"
-
-    if result.probability_bad >= 0.7:
-        risk_level = "high"
-    elif result.probability_bad >= 0.4:
-        risk_level = "medium"
-    else:
-        risk_level = "low"
+    risk_level = compute_risk_level(result.probability_bad)
 
     return render_template(
         "demo_full.html",
