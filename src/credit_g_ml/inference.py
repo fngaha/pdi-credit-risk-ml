@@ -13,10 +13,10 @@ import joblib
 import pandas as pd
 from sklearn.pipeline import Pipeline
 
-from .config import MODELS_DIR
+from .config import MODEL_NAME, MODELS_DIR
 from .schemas import ALL_FEATURES
 
-DEFAULT_MODEL_PATH = MODELS_DIR / "logistic_regression_pipeline.joblib"
+DEFAULT_MODEL_PATH = MODELS_DIR / f"{MODEL_NAME}_pipeline.joblib"
 
 
 @dataclass(frozen=True)
