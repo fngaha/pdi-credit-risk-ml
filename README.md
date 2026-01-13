@@ -12,25 +12,15 @@ Scoring de risque crédit basé sur le dataset **credit-g** (OpenML), développ�
 ## Objectifs
 
 - Explorer et préparer les données **(EDA)**
-
 - Entraîner un modèle de machine learning pour prédire le risque de défaut
-
 - Exposer le modèle via une **API Flask**
-
 - Proposer une **interface web métier** pour le scoring client
-
 - Mettre en œuvre des **bonnes pratiques professionnelles** :
-
   - formatage du code avec **black**
-
   - linting avec **ruff**
-
   - hooks **pre-commit**
-
   - tests automatisés avec **pytest**
-
   - conteneurisation **Docker**
-
   - déploiement **Cloud Run** (keyless via **WIF**)
 
 ## Architecture du projet
@@ -57,6 +47,91 @@ Le modèle baseline (Logistic Regression) atteint :
 Rapports disponibles :
 - `reports/baseline_logistic_regression.md`
 - `reports/roc_curve_logistic_regression.png`
+
+## Model v2 → Model v3 — Business Decision Thresholds
+
+### Contexte (Model v2)
+
+Le Model v2 introduit une comparaison de plusieurs modèles
+(Logistic Regression, Random Forest, HistGradientBoosting) sur un même split, avec un préprocessing identique.
+
+Bien que certains modèles améliorent légèrement le ROC AUC ou la précision,
+le score retourné reste probabiliste (P(bad)), ce qui pose une question clé :
+
+> Comment transformer une probabilité en décision métier exploitable ?
+
+### Problématique métier
+
+Dans un contexte de scoring crédit, une décision binaire (accept / reject)
+est souvent trop simpliste.
+
+Les équipes métier ont généralement besoin :
+
+- d’un refus automatique pour les dossiers très risqués,
+- d’une acceptation automatique pour les dossiers très sûrs,
+- d’une zone grise nécessitant une revue humaine.
+
+## Introduction des seuils métier (Model v3)
+
+Le Model v3 ne change pas le modèle de machine learning,
+mais ajoute une couche de décision métier explicite basée sur deux seuils :
+
+| Seuil                     | Rôle                                 |
+| ------------------------- | ------------------------------------ |
+| `A` – seuil d’acceptation | En dessous → acceptation automatique |
+| `R` – seuil de rejet      | Au-dessus → rejet automatique        |
+
+Avec la règle suivante :
+
+- ACCEPT si P(bad) < A
+- REVIEW si A ≤ P(bad) < R
+- REJECT si P(bad) ≥ R
+
+Exemple (issus de l’analyse coût métier) :
+
+| Seuil | Valeur |
+| ----- | ------ |
+| A     | 0.15   |
+| R     | 0.50   |
+
+### Seuils optimaux (analyse coût)
+
+Une analyse coût simple (pondération FN / FP) a conduit au seuil optimal suivant :
+
+```text
+Seuil optimal ≈ 0.15
+Coût total = 114
+FN = 3
+FP = 99
+```
+
+Ce seuil devient naturellement le seuil d’acceptation (A),
+tandis que le seuil de rejet (R) est fixé plus haut pour sécuriser les décisions.
+
+### Visualisation dans l’UI
+
+L’interface met en évidence :
+
+- le score P(bad),
+- les seuils A (accept) et R (reject),
+- la décision métier finale (ACCEPT / REVIEW / REJECT),
+- une séparation visuelle claire entre :
+  - risque modèle (informatif),
+  - règle métier (décision).
+
+Le modèle ne décide pas seul :
+il fournit un score, la décision reste pilotée par la stratégie métier.
+
+## Message clé
+
+> Le machine learning prédit un risque,<br>
+> le métier décide à l’aide de règles explicites.
+
+Cette approche rend le système :
+
+- interprétable,
+- auditable,
+- facilement ajustable sans réentraîner le modèle.
 
 ## API – Credit Risk Scoring
 
@@ -148,17 +223,11 @@ Exemple de réponse :
 Champs retournés :
 
 - `label` : classe prédite (`good` ou `bad`)
-
 - `probability_bad` : probabilité de défaut
-
 - `probability_good` : probabilité de non défaut
-
 - `risk_level` :
-
   - `low` : risque faible
-
   - `medium` : risque modéré
-
   - `high` : risque élevé
 
 > Le modèle fournit un **score probabiliste**.<br>
@@ -169,9 +238,7 @@ Champs retournés :
 Les entrées sont validées côté API :
 
 - types des champs
-
 - bornes numériques
-
 - présence obligatoire de toutes les features
 
 En cas d’erreur → réponse **HTTP 422** avec détail.
@@ -193,15 +260,10 @@ docker run --rm -p 5001:5000 -e PORT=5000 pdi-credit-risk-ml
 Accès :
 
 - UI: http://127.0.0.1:5001/
-
 - Health: http://127.0.0.1:5001/health
-
 - Demo profiles:
-
   - /demo/low
-
   - /demo/medium
-
   - /demo/high
 
 ## Sécurité API (minimaliste)
@@ -231,29 +293,17 @@ https://pdi-credit-risk-ml-mbn4mquhua-ew.a.run.app
 ### Script de démonstration (≈ 3 minutes)
 
 1. Contexte
-
     - Cas réel de scoring crédit
-
     - Modèle ML + API + dashboard métier
-
 2. Risque faible
-
     - /demo/full/low
-
     - Acceptation immédiate
-
 3. Cas intermédiaire
-
     - /demo/full/medium
-
     - Décision dépendante du seuil métier
-
 4. Risque élevé
-
     - /demo/full/high
-
     - Rejet automatique
-
     - Visualisation claire (jauge, badges)
 
 ### Message clé
@@ -277,25 +327,16 @@ Credit risk scoring based on the **credit-g** dataset (OpenML), developed accord
 ## Project Goals
 
 - Explore and prepare data **(EDA)**
-
 - Train a machine learning model to predict credit default risk
-
 - Expose the model through a **Flask API**
-
 - Provide a simple business-oriented web interface for client scoring
 
 - Apply professional best practices:
-
   - code formatting with **black**
-
   - linting with **ruff**
-
   - **pre-commit** hooks
-
   - automated testing with **pytest**
-
   - **Docker** containerization
-
   - **Cloud Run** deployment (keyless via **WIF**)
 
 ## Project Architecture
@@ -322,6 +363,92 @@ The baseline model (Logistic Regression) achieves:
 Available reports:
 - `reports/baseline_logistic_regression.md`
 - `reports/roc_curve_logistic_regression.png`
+
+## Model v2 → Model v3 — Business Decision Thresholds
+
+### Context (Model v2)
+
+Model v2 compares several algorithms
+(Logistic Regression, Random Forest, HistGradientBoosting)
+using the same data split and identical preprocessing.
+
+While some models slightly improve ROC AUC or precision,
+the output remains a probability score (P(bad)), raising a key question:
+
+> How do we turn a probability into a business-ready decision?
+
+### Business challenge
+
+In credit risk scoring, a strict accept / reject decision is often too crude.
+
+Business teams usually require:
+
+- automatic rejection for very risky applications
+- automatic acceptance for very safe ones
+- an intermediate manual review zone
+
+### Business decision thresholds (Model v3)
+
+Model v3 does not change the ML model itself,
+but introduces an explicit business decision layer
+based on two thresholds:
+
+| Threshold                  | Role                         |
+| -------------------------- | ---------------------------- |
+| `A` – acceptance threshold | Below → automatic acceptance |
+| `R` – rejection threshold  | Above → automatic rejection  |
+
+Decision rule:
+
+- ACCEPT if P(bad) < A
+- REVIEW if A ≤ P(bad) < R
+- REJECT if P(bad) ≥ R
+
+Example (derived from cost analysis):
+
+| Threshold | Value  |
+| --------- | ------ |
+| A         | 0.15   |
+| R         | 0.35   |
+
+### Optimal threshold (cost-based analysis)
+
+A simple cost-sensitive analysis (FN vs FP weighting) led to:
+
+```text
+Optimal threshold ≈ 0.15
+Total cost = 114
+FN = 3
+FP = 99
+```
+
+This value naturally becomes the acceptance threshold (A),
+while the rejection threshold (R) is set higher for risk control.
+
+### UI visualization
+
+The UI clearly displays:
+
+- P(bad) score,
+- accept / reject thresholds,
+- final business decision (ACCEPT / REVIEW / REJECT),
+- a clean separation between:
+  - model risk (informational),
+  - business rules (decision).
+
+The model does not decide alone:
+it provides a score, while business rules drive the final decision.
+
+## Key takeaway
+
+> Machine learning predicts risk.
+> Business rules make the decision.
+
+This approach ensures the system is:
+
+- interpretable,
+- auditable,
+- easy to adapt without retraining the model.
 
 ## API – Credit Risk Scoring
 
@@ -413,17 +540,11 @@ Expected response:
 Response fields
 
 - `label` : classe prédite (`good` ou `bad`)
-
 - `probability_bad` : probabilité de défaut
-
 - `probability_good` : probabilité de non défaut
-
 - `risk_level` :
-
   - `low` : risque faible
-
   - `medium` : risque modéré
-
   - `high` : risque élevé
 
 > Le modèle fournit un **score probabiliste**.<br>
@@ -432,11 +553,8 @@ Response fields
 ### Input validation
 
 All inputs are validated at API level:
-
 - data types
-
 - numeric ranges
-
 - mandatory feature presence
 
 Invalid requests return HTTP 422 with details.
@@ -458,15 +576,10 @@ docker run --rm -p 5001:5000 -e PORT=5000 pdi-credit-risk-ml
 Access:
 
 - UI: http://127.0.0.1:5001/
-
 - Health: http://127.0.0.1:5001/health
-
 - Demo profiles:
-
   - /demo/low
-
   - /demo/medium
-
   - /demo/high
 
 ## API Security (minimal)
@@ -496,29 +609,17 @@ https://pdi-credit-risk-ml-mbn4mquhua-ew.a.run.app
 ### Demo script (≈ 3 minutes)
 
 1. Context
-
     - Real-world credit scoring use case
-
     - ML model + API + business dashboard
-
 2. Low risk case
-
     - /demo/full/low
-
     - Immediate approval
-
 3. Medium risk case
-
     - /demo/full/medium
-
     - Decision depends on business threshold
-
 4. High risk case
-
     - /demo/full/high
-
     - Automatic rejection
-
     - Clear visualization (gauge, badges)
 
 ### Key message

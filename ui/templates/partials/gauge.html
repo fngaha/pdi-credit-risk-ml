@@ -4,8 +4,11 @@
   <div class="gauge-wrap">
     <div
       class="gauge risk-{{ result.risk_level }}"
-      style="--p: {{ (result.probability_bad * 100) | round(1) }};
-             --t: {{ (result.threshold * 100) | round(1) }};"
+      style="
+        --p: {{ (result.probability_bad * 100) | round(1) }};
+        --ta: {{ (result.threshold_accept * 100) | round(1) }};
+        --tr: {{ (result.threshold_reject * 100) | round(1) }};
+      "
     >
       <div class="gauge-inner">
         <div class="gauge-value">
@@ -21,8 +24,10 @@
         Risque (bad)
       </div>
       <div class="legend-item">
-        <span class="dot threshold"></span>
-        Seuil métier
+        <span class="dot accept"></span> Seuil ACCEPT
+      </div>
+      <div class="legend-item">
+        <span class="dot reject"></span> Seuil REJECT
       </div>
     </div>
   </div>

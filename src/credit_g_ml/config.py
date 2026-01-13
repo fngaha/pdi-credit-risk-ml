@@ -15,5 +15,7 @@ TARGET_COL = "class"
 # Nom du modèle à charger en production
 MODEL_NAME = os.getenv("MODEL_NAME", "logistic_regression")
 
-# Seuil métier utilisé pour la décision (P(bad) >= seuil => bad)
+# Seuils de décision (API + démos)
 THRESHOLD_BAD = float(os.getenv("THRESHOLD_BAD", "0.50"))
+THRESHOLD_ACCEPT = float(os.getenv("THRESHOLD_ACCEPT", "0.15"))
+THRESHOLD_REJECT = float(os.getenv("THRESHOLD_REJECT", "0.35"))

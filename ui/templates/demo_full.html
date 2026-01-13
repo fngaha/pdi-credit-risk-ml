@@ -40,9 +40,21 @@
     <a class="btn-secondary" href="/">Retour à l’UI</a>
   </div>
 
-    {% include "partials/gauge.html" %}
-    {% include "partials/bars.html" %}
-    {% include "partials/badges.html" %}
+  <div class="demo-dashboard">
+    <div class="demo-left">
+      {% include "partials/badges.html" %}
+      <p class="note compact">
+        Décision métier basée sur A (accept) et R (reject) appliqués à P(bad).
+      </p>
+    </div>
+
+    <div class="demo-right">
+      <div class="viz-grid">
+        {% include "partials/gauge.html" %}
+        {% include "partials/bars.html" %}
+      </div>
+    </div>
+  </div>
 
     <p class="note">
       Décision métier basée sur un seuil configurable appliqué à P(bad).

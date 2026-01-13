@@ -4,6 +4,8 @@
   --muted: #666;
   --bg: #fafafa;
   --card: #fff;
+  --accept: #2563eb;  /* bleu */
+  --reject: #7c3aed;  /* violet */
 }
 
 * { box-sizing: border-box; }
@@ -142,6 +144,7 @@ select {
 
 .decision.accept { color: #0a7; }
 .decision.reject { color: #c00; }
+.decision.review { color: #c80; }
 
 input[type="range"] {
   width: 100%;
@@ -184,16 +187,16 @@ input[type="range"] {
 
 .threshold-line {
   position: absolute;
-  top: 26px;
-  transform: translateX(-50%);
-  height: 18px;
+  top: 0;
+  height: 100%;
   width: 2px;
-  background: #111;
+  transform: translateX(-50%);
+  background: #111; /* fallback */
 }
 
 .threshold-label {
   position: absolute;
-  top: 18px;
+  top: -22px;
   left: 6px;
   font-size: 12px;
   color: var(--muted);
@@ -226,6 +229,7 @@ input[type="range"] {
 
 .pill.decision.accept { border-color: #bfe6bf; color: #0a7; }
 .pill.decision.reject { border-color: #ffb3b3; color: #c00; }
+.pill.decision.review { border-color: #ffe0b3; color: #c80; }
 
 .pill.neutral { color: var(--muted); }
 
@@ -241,6 +245,7 @@ input[type="range"] {
 }
 
 .gauge-wrap {
+  justify-content: center;
   display: flex;
   gap: 18px;
   align-items: center;
@@ -260,21 +265,50 @@ input[type="range"] {
   transition: background 0.3s ease;
 }
 
+.gauge::before,
 .gauge::after {
-  /* marker threshold (a small dot on the ring) */
+  /* marker threshold (small dot on the ring) */
   content: "";
   position: absolute;
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #111;
+  top: 50%;
+  left: 50%;
+}
+
+/* Seuil ACCEPT (bleu) */
+.gauge::before {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accept);
   top: 50%;
   left: 50%;
   transform:
-    rotate(calc((var(--t) * 3.6deg) - 90deg))
+    rotate(calc((var(--ta) * 3.6deg) - 90deg))
     translate(62px)
-    rotate(calc(-1 * ((var(--t) * 3.6deg) - 90deg)));
+    rotate(calc(-1 * ((var(--ta) * 3.6deg) - 90deg)));
 }
+
+/* Seuil REJECT (violet) */
+.gauge::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--reject);
+  top: 50%;
+  left: 50%;
+  transform:
+    rotate(calc((var(--tr) * 3.6deg) - 90deg))
+    translate(62px)
+    rotate(calc(-1 * ((var(--tr) * 3.6deg) - 90deg)));
+}
+
 
 /* Couleurs par niveau de risque */
 .gauge.risk-low {
@@ -335,6 +369,11 @@ input[type="range"] {
 }
 
 .dot.threshold { background: #111; }
+.dot.threshold-accept { background: #c80; }
+.dot.threshold-reject { background: #c00; }
+
+.dot.accept { background: #0a7; }
+.dot.reject { background: #c00; }
 
 /* Dot risque dynamique */
 .dot.risk-low { background: #0a7; }
@@ -413,3 +452,191 @@ input[type="range"] {
   color: #fff;
   border-color: #c00;
 }
+
+.threshold-line.accept {
+  border-left: 2px dashed var(--accept);
+}
+.threshold-line.reject {
+  border-left: 2px dashed var(--reject);
+}
+
+.threshold-line.accept .threshold-label { color: #c80; }
+.threshold-line.reject .threshold-label { color: #c00; }
+
+/* 3-state decision */
+.decision.review { color: #4b49c6; }
+
+.pill.decision.review {
+  border-color: #d6d5ff;
+  color: #4b49c6;
+}
+
+/* Chips sous le slider */
+.threshold-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  background: #fff;
+}
+
+.chip.accept { border-color: #bfe6bf; color: #0a7; }
+.chip.review { border-color: #d6d5ff; color: #4b49c6; }
+.chip.reject { border-color: #ffb3b3; color: #c00; }
+
+/* Seuils accept/reject dans les barres */
+.threshold-line.accept { background: #0a7; }
+.threshold-line.reject { background: #c00; }
+
+.threshold-label.accept { color: var(--accept); }
+.threshold-label.reject { color: var(--reject); }
+
+/* Dot "reject" dans la légende jauge */
+.dot.reject { background: #c00; }
+
+
+.kpi-pill {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  line-height: 1;
+  width: fit-content;
+  background: #fff;
+}
+
+.kpi-pill.decision.accept { border-color: #bfe6bf; }
+.kpi-pill.decision.review { border-color: #d6d5ff; }
+.kpi-pill.decision.reject { border-color: #ffb3b3; }
+
+.pill.decision.accept {
+  border-color: var(--accept);
+  color: var(--accept);
+}
+
+.pill.decision.review {
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+.pill.decision.reject {
+  border-color: var(--reject);
+  color: var(--reject);
+}
+
+/* --- Dashboard layout (résultat) --- */
+
+.result-dashboard {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.grid-compact {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.kpi-small {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.note.compact {
+  margin-top: 8px;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* Les cartes visuelles ne doivent pas “s’étirer” verticalement */
+.gauge-card, .bars {
+  margin: 0;
+}
+
+/* --- Full demo layout --- */
+
+.demo-dashboard {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 18px;
+  align-items: start;
+  width: min(1100px, 92vw);
+}
+
+.demo-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.demo-right {
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .result-dashboard,
+  .demo-dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .grid-compact {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Seuils : couleurs dédiées (différentes du risk) */
+.pill.threshold-accept {
+  border-color: #3b82f6; /* bleu */
+  color: #2563eb;
+}
+
+.pill.threshold-reject {
+  border-color: #8b5cf6; /* violet */
+  color: #7c3aed;
+}
+
+/* Libellé métier dynamique */
+.pill.business-label {
+  font-weight: 600;
+}
+
+.pill.business-label.accept {
+  border-color: #bfe6bf;
+  color: #0a7;
+}
+
+.pill.business-label.review {
+  border-color: #ffe0b3;
+  color: #c80;
+}
+
+.pill.business-label.reject {
+  border-color: #ffb3b3;
+  color: #c00;
+}
+
+/* (si tu veux) décision review dans les KPI */
+.decision.review { color: #c80; }

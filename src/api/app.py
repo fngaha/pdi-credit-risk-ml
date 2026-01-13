@@ -9,7 +9,7 @@ from pydantic import ValidationError
 
 from api.demo_profiles import DEMO_PROFILES
 from api.schemas import CreditRiskRequest, CreditRiskResponse
-from credit_g_ml.config import THRESHOLD_BAD
+from credit_g_ml.config import THRESHOLD_ACCEPT, THRESHOLD_REJECT
 from credit_g_ml.inference import load_model, predict_single
 from credit_g_ml.metadata import get_categorical_values
 
@@ -34,7 +34,7 @@ _pipeline: Any | None = None
 
 
 DEFAULT_FORM = {
-    "threshold": THRESHOLD_BAD,
+    "threshold": THRESHOLD_ACCEPT,
     "duration": 24,
     "credit_amount": 5000,
     "installment_commitment": 3,
@@ -65,17 +65,42 @@ def get_pipeline():
     return _pipeline
 
 
+def compute_decision(p_bad: float) -> str:
+    """Décision métier en 3 états selon P(bad)."""
+    if p_bad >= THRESHOLD_REJECT:
+        return "reject"
+    if p_bad >= THRESHOLD_ACCEPT:
+        return "review"
+    return "accept"
+
+
 def compute_risk_level(p_bad: float) -> str:
-    # Niveau de risque "informatif" (indépendant du seuil métier)
-    if p_bad >= 0.7:
+    """Niveau de risque aligné sur les seuils métier."""
+    if p_bad >= THRESHOLD_REJECT:
         return "high"
-    if p_bad >= 0.4:
+    if p_bad >= THRESHOLD_ACCEPT:
         return "medium"
     return "low"
 
 
-def compute_decision(p_bad: float, threshold: float) -> str:
-    return "reject" if p_bad >= threshold else "accept"
+def compute_risk_level_with_thresholds(
+    p_bad: float, accept: float, reject: float
+) -> str:
+    """Niveau de risque basé sur des seuils (utile pour le slider)."""
+    if p_bad >= reject:
+        return "high"
+    if p_bad >= accept:
+        return "medium"
+    return "low"
+
+
+def compute_decision_with_thresholds(p_bad: float, accept: float, reject: float) -> str:
+    """Décision métier basée sur des seuils (utile pour le slider)."""
+    if p_bad >= reject:
+        return "reject"
+    if p_bad >= accept:
+        return "review"
+    return "accept"
 
 
 @app.get("/health")
@@ -101,17 +126,18 @@ def predict():
         return jsonify({"error": "invalid_json"}), 400
 
     pipeline = get_pipeline()
-
     result = predict_single(pipeline, req.model_dump())
-    risk_level = compute_risk_level(result.probability_bad)
-    decision = compute_decision(result.probability_bad, THRESHOLD_BAD)
+    p_bad = result.probability_bad
+    risk_level = compute_risk_level(p_bad)
+    decision = compute_decision(p_bad)
 
     resp = CreditRiskResponse(
         label=result.label,
         probability_bad=result.probability_bad,
         probability_good=result.probability_good,
         risk_level=risk_level,
-        threshold_bad=THRESHOLD_BAD,
+        threshold_accept=THRESHOLD_ACCEPT,
+        threshold_reject=THRESHOLD_REJECT,
         decision=decision,
     )
     return jsonify(resp.model_dump())
@@ -131,7 +157,7 @@ def home():
 @app.post("/ui/predict")
 def ui_predict():
     form_payload = request.form.to_dict()
-    threshold_str = form_payload.get("threshold", str(THRESHOLD_BAD))
+    threshold_str = form_payload.get("threshold", str(THRESHOLD_ACCEPT))
     threshold = float(threshold_str)
     threshold = max(0.0, min(1.0, threshold))  # clamp sécurité
 
@@ -173,11 +199,19 @@ def ui_predict():
             400,
         )
 
-    pipeline = get_pipeline()
+    threshold_accept = threshold  # slider
+    threshold_reject = THRESHOLD_REJECT
+    threshold_accept = min(threshold_accept, threshold_reject - 1e-6)
 
+    pipeline = get_pipeline()
     result = predict_single(pipeline, req.model_dump())
-    business_decision = "reject" if result.probability_bad >= threshold else "accept"
-    risk_level = compute_risk_level(result.probability_bad)
+    p_bad = result.probability_bad
+    risk_level = compute_risk_level_with_thresholds(
+        p_bad, threshold_accept, threshold_reject
+    )
+    business_decision = compute_decision_with_thresholds(
+        p_bad, threshold_accept, threshold_reject
+    )
 
     return render_template(
         "index.html",
@@ -186,10 +220,11 @@ def ui_predict():
             "probability_bad": result.probability_bad,
             "probability_good": result.probability_good,
             "risk_level": risk_level,
-            "threshold": threshold,
+            "threshold_accept": threshold_accept,
+            "threshold_reject": threshold_reject,
             "business_decision": business_decision,
         },
-        form=req.model_dump() | {"threshold": threshold},
+        form=req.model_dump() | {"threshold": threshold_accept},
         categorical_options=get_categorical_values(),
     )
 
@@ -199,16 +234,15 @@ def demo(level: str):
     if level not in DEMO_PROFILES:
         return "Unknown demo profile", 404
 
-    threshold = THRESHOLD_BAD
     payload = DEMO_PROFILES[level]
 
     pipeline = get_pipeline()
 
     req = CreditRiskRequest(**payload)
     result = predict_single(pipeline, req.model_dump())
-
-    business_decision = "reject" if result.probability_bad >= threshold else "accept"
-    risk_level = compute_risk_level(result.probability_bad)
+    p_bad = result.probability_bad
+    risk_level = compute_risk_level(p_bad)
+    business_decision = compute_decision(p_bad)
     categorical_options = get_categorical_values()
 
     return render_template(
@@ -218,10 +252,11 @@ def demo(level: str):
             "probability_bad": result.probability_bad,
             "probability_good": result.probability_good,
             "risk_level": risk_level,
-            "threshold": threshold,
+            "threshold_accept": THRESHOLD_ACCEPT,
+            "threshold_reject": THRESHOLD_REJECT,
             "business_decision": business_decision,
         },
-        form=req.model_dump() | {"threshold": threshold},
+        form=req.model_dump() | {"threshold": THRESHOLD_ACCEPT},
         categorical_options=categorical_options,
     )
 
@@ -231,16 +266,15 @@ def demo_full(level: str):
     if level not in DEMO_PROFILES:
         return "Unknown demo profile", 404
 
-    threshold = THRESHOLD_BAD
     payload = DEMO_PROFILES[level]
 
     pipeline = get_pipeline()
 
     req = CreditRiskRequest(**payload)
     result = predict_single(pipeline, req.model_dump())
-
-    business_decision = "reject" if result.probability_bad >= threshold else "accept"
-    risk_level = compute_risk_level(result.probability_bad)
+    p_bad = result.probability_bad
+    risk_level = compute_risk_level(p_bad)
+    business_decision = compute_decision(p_bad)
 
     return render_template(
         "demo_full.html",
@@ -249,7 +283,8 @@ def demo_full(level: str):
             "probability_bad": result.probability_bad,
             "probability_good": result.probability_good,
             "risk_level": risk_level,
-            "threshold": threshold,
+            "threshold_accept": THRESHOLD_ACCEPT,
+            "threshold_reject": THRESHOLD_REJECT,
             "business_decision": business_decision,
         },
         current_level=level,

@@ -24,51 +24,61 @@
 
       {% if result %}
       <div class="alert alert-success">
-        <div class="grid">
-          <div>
-            <div class="kpi-title">Prédiction</div>
-            <div class="kpi-value">{{ result.label | upper }}</div>
+        <div class="result-dashboard">
+          <!-- Colonne gauche : KPIs + badges + explication courte -->
+          <div class="result-left">
+            <div class="grid grid-compact">
+              <div>
+                <div class="kpi-title">Prédiction</div>
+                <div class="kpi-value">{{ result.label | upper }}</div>
+              </div>
+
+              <div>
+                <div class="kpi-title">Décision métier</div>
+                <div class="kpi-value decision {{ result.business_decision }}">
+                  {{ result.business_decision | upper }}
+                </div>
+              </div>
+
+              <div>
+                <div class="kpi-title">Risque</div>
+                <div class="kpi-value risk {{ result.risk_level }}">{{ result.risk_level | upper }}</div>
+              </div>
+
+              <div>
+                <div class="kpi-title">P(bad)</div>
+                <div class="kpi-value">{{ "%.3f"|format(result.probability_bad) }}</div>
+              </div>
+
+              <div>
+                <div class="kpi-title">P(good)</div>
+                <div class="kpi-value">{{ "%.3f"|format(result.probability_good) }}</div>
+              </div>
+
+              <div>
+                <div class="kpi-title">Seuils</div>
+                <div class="kpi-value kpi-small">
+                  A: {{ "%.2f"|format(result.threshold_accept) }} • R: {{ "%.2f"|format(result.threshold_reject) }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Badges compact (une seule fois) -->
+            {% include "partials/badges.html" %}
+
+            <p class="note compact">
+              Lecture : <strong>ACCEPT</strong> si P(bad) &lt; A, <strong>REVIEW</strong> si A ≤ P(bad) &lt; R, <strong>REJECT</strong> si P(bad) ≥ R.
+            </p>
           </div>
-          <div>
-            <div class="kpi-title">Risque</div>
-            <div class="kpi-value risk {{ result.risk_level }}">{{ result.risk_level | upper }}</div>
-          </div>
-          <div>
-            <div class="kpi-title">P(bad)</div>
-            <div class="kpi-value">{{ "%.3f"|format(result.probability_bad) }}</div>
-          </div>
-          <div>
-            <div class="kpi-title">P(good)</div>
-            <div class="kpi-value">{{ "%.3f"|format(result.probability_good) }}</div>
-          </div>
-          <div>
-            <div class="kpi-title">Décision métier</div>
-            <div class="kpi-value decision {{ result.business_decision }}">
-              {{ result.business_decision | upper }}
+
+          <!-- Colonne droite : visuels -->
+          <div class="result-right">
+            <div class="viz-grid">
+              {% include "partials/gauge.html" %}
+              {% include "partials/bars.html" %}
             </div>
           </div>
-          <div>
-            <div class="kpi-title">Seuil</div>
-            <div class="kpi-value">{{ "%.2f"|format(result.threshold) }}</div>
-          </div>
         </div>
-
-        <div>
-          {% if result %}
-            {% include "partials/gauge.html" %}
-            {% include "partials/bars.html" %}
-            {% include "partials/badges.html" %}
-          {% endif %}
-
-          <p class="note">
-            Lecture : plus la barre <strong>P(bad)</strong> est longue, plus le risque est élevé.
-            La ligne “Seuil” illustre la règle métier (rejet si P(bad) ≥ seuil).
-          </p>
-        </div>
-
-        <p class="note">
-          *Les seuils de risque (low/medium/high) sont basés sur P(bad) et peuvent être ajustés.
-        </p>
       </div>
       {% endif %}
 
@@ -286,7 +296,7 @@
           <h3>Seuil métier</h3>
 
           <label>
-            Seuil de rejet (P(bad) ≥ seuil)
+            Seuil d’acceptation (P(bad) < seuil ⇒ ACCEPT)
             <input
               type="range"
               name="threshold"
@@ -303,11 +313,23 @@
               </strong>
               <span>1.00</span>
             </div>
+            <div class="threshold-summary">
+              <span class="chip accept">
+                ACCEPT &lt; {{ "%.0f"|format((form.threshold if form and form.threshold is not none else 0.15) * 100) }}%
+              </span>
+              <span class="chip review">
+                REVIEW {{ "%.0f"|format((form.threshold if form and form.threshold is not none else 0.15) * 100) }}–{{ "%.0f"|format((result.threshold_reject if result else 0.35) * 100) }}%
+              </span>
+              <span class="chip reject">
+                REJECT ≥ {{ "%.0f"|format((result.threshold_reject if result else 0.35) * 100) }}%
+              </span>
+            </div>
+
           </label>
 
           <p class="hint">
-            Plus le seuil est bas, plus on rejette de dossiers (réduction du risque, mais plus de faux positifs).
-            Plus le seuil est haut, plus on accepte (meilleure conversion, mais plus de risque).
+            Plus le seuil d’acceptation est bas, plus de dossiers passent en <strong>REVIEW/REJECT</strong> (moins de FN, plus de FP).
+            Plus il est haut, plus on <strong>ACCEPTE</strong> (meilleure conversion, mais plus de risque).
           </p>
         </div>
 
