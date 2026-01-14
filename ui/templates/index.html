@@ -11,7 +11,7 @@
       <header class="header">
         <h1>Credit Risk Scoring</h1>
         <p class="subtitle">
-          PDI – credit-g (OpenML) • Credit Risk Scoring with Business Decision Thresholds
+          Scoring de risque crédit avec seuils de décision métier
         </p>
       </header>
 
@@ -102,192 +102,192 @@
         <div class="form-grid">
           <!-- Numériques -->
           <label>
-            Duration (months)
+            {{ "duration" | lbl }}
             <input type="number" name="duration" min="1" required value="{{ form.duration if form else 24 }}" />
           </label>
 
           <label>
-            Credit amount
+            {{ "credit_amount" | lbl }}
             <input type="number" name="credit_amount" min="1" step="1" required value="{{ form.credit_amount if form else 5000 }}" />
           </label>
 
           <label>
-            Installment commitment (1–4)
+            {{ "installment_commitment" | lbl }}
             <input type="number" name="installment_commitment" min="1" max="4" required value="{{ form.installment_commitment if form else 3 }}" />
           </label>
 
           <label>
-            Residence since (1–4)
+            {{ "residence_since" | lbl }}
             <input type="number" name="residence_since" min="1" max="4" required value="{{ form.residence_since if form else 4 }}" />
           </label>
 
           <label>
-            Age
+            {{ "age" | lbl }}
             <input type="number" name="age" min="18" max="120" required value="{{ form.age if form else 45 }}" />
           </label>
 
           <label>
-            Existing credits
+            {{ "existing_credits" | lbl }}
             <input type="number" name="existing_credits" min="0" max="10" required value="{{ form.existing_credits if form else 2 }}" />
           </label>
 
           <label>
-            Num dependents
+            {{ "num_dependents" | lbl }}
             <input type="number" name="num_dependents" min="0" max="10" required value="{{ form.num_dependents if form else 1 }}" />
           </label>
 
           <!-- Catégorielles (texte libre pour le PDI; handle_unknown="ignore") -->
           <label>
-            Checking status
+            {{ "checking_status" | lbl }}
             <select name="checking_status" required>
               {% for option in categorical_options.checking_status %}
                 <option value="{{ option }}"
                   {% if form and form.checking_status == option %}selected{% endif %}>
-                  {{ option }}
+                  {{ option | t("checking_status") }}
                 </option>
               {% endfor %}
             </select>
           </label>
 
           <label>
-            Credit history
+            {{ "credit_history" | lbl }}
             <select name="credit_history" required>
               {% for option in categorical_options.credit_history %}
                 <option value="{{ option }}"
                   {% if form and form.credit_history == option %}selected{% endif %}>
-                  {{ option }}
+                  {{ option | t("credit_history") }}
                 </option>
               {% endfor %}
             </select>
           </label>
 
           <label>
-            Purpose
+            {{ "purpose" | lbl }}
             <select name="purpose" required>
               {% for option in categorical_options.purpose %}
                 <option value="{{ option }}"
                   {% if form and form.purpose == option %}selected{% endif %}>
-                  {{ option }}
+                  {{ option | t("purpose") }}
                 </option>
               {% endfor %}
             </select>
           </label>
 
           <label>
-            Savings status
+            {{ "savings_status" | lbl }}
             <select name="savings_status" required>
               {% for option in categorical_options.savings_status %}
                 <option value="{{ option }}"
                   {% if form and form.savings_status == option %}selected{% endif %}>
-                  {{ option }}
+                  {{ option | t("savings_status") }}
                 </option>
               {% endfor %}
             </select>
           </label>
 
           <label>
-            Employment
+            {{ "employment" | lbl }}
             <select name="employment" required>
               {% for option in categorical_options.employment %}
                 <option value="{{ option }}"
                   {% if form and form.employment == option %}selected{% endif %}>
-                  {{ option }}
+                  {{ option | t("employment") }}
                 </option>
               {% endfor %}
             </select>
           </label>
 
           <label>
-            Personal status
+            {{ "personal_status" | lbl }}
             <select name="personal_status" required>
               {% for option in categorical_options.personal_status %}
                 <option value="{{ option }}"
                   {% if form and form.personal_status == option %}selected{% endif %}>
-                  {{ option }}
+                  {{ option | t("personal_status") }}
                 </option>
               {% endfor %}
             </select>
           </label>
 
           <label>
-            Other parties
+            {{ "other_parties" | lbl }}
             <select name="other_parties" required>
               {% for option in categorical_options.other_parties %}
                 <option value="{{ option }}"
                   {% if form and form.other_parties == option %}selected{% endif %}>
-                  {{ option }}
+                  {{ option | t("other_parties") }}
                 </option>
               {% endfor %}
             </select>
           </label>
 
           <label>
-            Property magnitude
+            {{ "property_magnitude" | lbl }}
             <select name="property_magnitude" required>
               {% for option in categorical_options.property_magnitude %}
                 <option value="{{ option }}"
                   {% if form and form.property_magnitude == option %}selected{% endif %}>
-                  {{ option }}
+                  {{ option | t("property_magnitude") }}
                 </option>
               {% endfor %}
             </select>
           </label>
 
           <label>
-            Other payment plans
+            {{ "other_payment_plans" | lbl }}
             <select name="other_payment_plans" required>
               {% for option in categorical_options.other_payment_plans %}
                 <option value="{{ option }}"
                   {% if form and form.other_payment_plans == option %}selected{% endif %}>
-                  {{ option }}
+                  {{ option | t("other_payment_plans") }}
                 </option>
               {% endfor %}
             </select>
           </label>
 
           <label>
-            Housing
+            {{ "housing" | lbl }}
             <select name="housing" required>
               {% for option in categorical_options.housing %}
                 <option value="{{ option }}"
                   {% if form and form.housing == option %}selected{% endif %}>
-                  {{ option }}
+                  {{ option | t("housing") }}
                 </option>
               {% endfor %}
             </select>
           </label>
 
           <label>
-            Job
+            {{ "job" | lbl }}
             <select name="job" required>
               {% for option in categorical_options.job %}
                 <option value="{{ option }}"
                   {% if form and form.job == option %}selected{% endif %}>
-                  {{ option }}
+                  {{ option | t("job") }}
                 </option>
               {% endfor %}
             </select>
           </label>
 
           <label>
-            Own telephone
+            {{ "own_telephone" | lbl }}
             <select name="own_telephone" required>
               {% for option in categorical_options.own_telephone %}
                 <option value="{{ option }}"
                   {% if form and form.own_telephone == option %}selected{% endif %}>
-                  {{ option }}
+                  {{ option | t("own_telephone") }}
                 </option>
               {% endfor %}
             </select>
           </label>
 
           <label>
-            Foreign worker
+            {{ "foreign_worker" | lbl }}
             <select name="foreign_worker" required>
               {% for option in categorical_options.foreign_worker %}
                 <option value="{{ option }}"
                   {% if form and form.foreign_worker == option %}selected{% endif %}>
-                  {{ option }}
+                  {{ option | t("foreign_worker") }}
                 </option>
               {% endfor %}
             </select>
@@ -343,7 +343,7 @@
       </form>
 
       <footer class="footer">
-        <small>© PDI – pdi-credit-risk-ml</small>
+        <small>© PDI – credit-g (OpenML)</small>
       </footer>
     </div>
   </body>

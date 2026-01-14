@@ -8,6 +8,7 @@ from flask import Flask, jsonify, render_template, request
 from pydantic import ValidationError
 
 from api.demo_profiles import DEMO_PROFILES
+from api.i18n import I18N_FR
 from api.schemas import CreditRiskRequest, CreditRiskResponse
 from credit_g_ml.config import THRESHOLD_ACCEPT, THRESHOLD_REJECT
 from credit_g_ml.inference import load_model, predict_single
@@ -56,6 +57,24 @@ DEFAULT_FORM = {
     "own_telephone": "none",
     "foreign_worker": "yes",
 }
+
+
+@app.template_filter("t")
+def t(value: str, field: str) -> str:
+    """
+    Translate a categorical option value for a given field.
+    Usage in Jinja: {{ option | t("checking_status") }}
+    """
+    return I18N_FR.get(field, {}).get("values", {}).get(value, value)
+
+
+@app.template_filter("lbl")
+def lbl(field: str) -> str:
+    """
+    Translate a field label.
+    Usage in Jinja: {{ "duration" | lbl }}
+    """
+    return I18N_FR.get(field, {}).get("label", field)
 
 
 def get_pipeline():
@@ -151,6 +170,7 @@ def home():
         api_token=os.getenv("API_TOKEN", ""),
         categorical_options=categorical_options,
         form=DEFAULT_FORM,
+        i18n=I18N_FR,
     )
 
 
@@ -185,6 +205,7 @@ def ui_predict():
                 details=e.errors(),
                 form=form_payload,
                 categorical_options=get_categorical_values(),
+                i18n=I18N_FR,
             ),
             422,
         )
@@ -195,6 +216,7 @@ def ui_predict():
                 error=f"Invalid form data: {e}",
                 form=form_payload,
                 categorical_options=get_categorical_values(),
+                i18n=I18N_FR,
             ),
             400,
         )
@@ -226,6 +248,7 @@ def ui_predict():
         },
         form=req.model_dump() | {"threshold": threshold_accept},
         categorical_options=get_categorical_values(),
+        i18n=I18N_FR,
     )
 
 
@@ -258,6 +281,7 @@ def demo(level: str):
         },
         form=req.model_dump() | {"threshold": THRESHOLD_ACCEPT},
         categorical_options=categorical_options,
+        i18n=I18N_FR,
     )
 
 
@@ -288,6 +312,7 @@ def demo_full(level: str):
             "business_decision": business_decision,
         },
         current_level=level,
+        i18n=I18N_FR,
     )
 
 

@@ -1,4 +1,5 @@
-# pdi-credit-risk-ml
+# Credit Risk Scoring
+## Scoring de risque crédit avec seuils de décision métier
 
 ![Deploy to Cloud Run](https://github.com/fngaha/pdi-credit-risk-ml/actions/workflows/deploy-cloudrun.yml/badge.svg)
 [![Live Demo](https://img.shields.io/badge/Live-Demo-green)](https://pdi-credit-risk-ml-mbn4mquhua-ew.a.run.app)
@@ -348,6 +349,9 @@ Projet de développement individuel – Développeur orienté IA<br>
 © 2026
 
 ---
+
+# Credit Risk Scoring
+## Credit Risk Scoring with Business Decision Thresholds
 
 **🇬🇧 End-of-training project – AI-Oriented Developer**
 
