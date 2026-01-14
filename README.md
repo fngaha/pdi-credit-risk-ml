@@ -122,7 +122,7 @@ L’interface met en évidence :
 Le modèle ne décide pas seul :
 il fournit un score, la décision reste pilotée par la stratégie métier.
 
-## Message clé
+### Message clé
 
 > Le machine learning prédit un risque,<br>
 > le métier décide à l’aide de règles explicites.
@@ -132,6 +132,35 @@ Cette approche rend le système :
 - interprétable,
 - auditable,
 - facilement ajustable sans réentraîner le modèle.
+
+## Feature Importance (interprétabilité du modèle)
+
+Afin d’améliorer la compréhension du modèle, une analyse des **coefficients de la Logistic Regression**
+a été réalisée.
+
+La magnitude absolue des coefficients (`|coef|`) est utilisée comme **proxy d’importance** :
+- plus |coef| est élevé, plus la variable influence la probabilité de défaut,
+- le signe du coefficient indique la direction :
+  - coefficient positif → augmente le risque (*bad*),
+  - coefficient négatif → diminue le risque.
+
+Cette importance est **indicative** et dépend :
+- du prétraitement (standardisation, one-hot encoding),
+- des corrélations entre variables.
+Elle ne constitue pas une règle métier.
+
+### Top 20 variables les plus influentes
+
+![Feature importance – Logistic Regression](reports/feature_importance_logreg_top20.png)
+
+Les valeurs détaillées sont disponibles ici :
+- `reports/feature_importance_logreg_top20.csv`
+
+### Message clé
+
+> “Les variables les plus influentes aident à comprendre le score,<br>
+> mais la décision finale repose exclusivement sur des seuils métier explicites<br>
+> afin de garantir traçabilité et gouvernance.”
 
 ## API – Credit Risk Scoring
 
@@ -439,7 +468,7 @@ The UI clearly displays:
 The model does not decide alone:
 it provides a score, while business rules drive the final decision.
 
-## Key takeaway
+### Key takeaway
 
 > Machine learning predicts risk.
 > Business rules make the decision.
@@ -449,6 +478,41 @@ This approach ensures the system is:
 - interpretable,
 - auditable,
 - easy to adapt without retraining the model.
+
+## Feature Importance (Model Interpretability)
+
+To improve model understanding, an analysis of the **Logistic Regression coefficients** was performed.
+
+The absolute magnitude of the coefficients (`|coef|`) is used as an **importance proxy**:
+
+- the higher the |coef|, the stronger the influence on the default probability,
+- the sign of the coefficient indicates the direction:
+  - positive coefficient → increases the risk (*bad*),
+  - negative coefficient → decreases the risk (good).
+
+This importance is **indicative only** and depends on:
+
+- the preprocessing pipeline (standardization, one-hot encoding),
+- the correlations between input variables.
+
+It does not represent a business decision rule.
+
+### Top 20 Most Influential Variables
+
+![Feature importance – Logistic Regression](reports/feature_importance_logreg_top20.png)
+
+Detailed values ​​are available here:
+
+- `reports/feature_importance_logreg_top20.csv`
+
+### Key takeaway
+
+> The model explains the risk,<br>
+> the business rules make the decision.
+
+Feature importance helps understand why a score is high or low,
+but the final credit decision is driven exclusively by explicit business thresholds
+(Accept / Review / Reject), ensuring transparency and governance.
 
 ## API – Credit Risk Scoring
 
