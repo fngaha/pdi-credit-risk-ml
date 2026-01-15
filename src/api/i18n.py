@@ -67,7 +67,7 @@ I18N_FR = {
         "label": "Situation personnelle",
         "values": {
             "male single": "Homme célibataire",
-            "male div/sep'": "Homme divorcé / séparé",
+            "male div/sep": "Homme divorcé / séparé",
             "female div/dep/mar": "Femme divorcée / séparée / mariée",
             "male mar/wid": "Homme marié / veuf",
         },
@@ -111,7 +111,7 @@ I18N_FR = {
             "unskilled resident": "Non qualifié (résident)",
             "skilled": "Employé qualifié",
             "high qualif/self emp/mgmt": "Cadre / indépendant",
-            "unemp/unskilled non res": "chômeurs/non qualifiés sans domicile fixe",
+            "unemp/unskilled non res": "chômeur / non qualifié sans domicile fixe",
         },
     },
     "own_telephone": {

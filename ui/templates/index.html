@@ -26,9 +26,9 @@
 
       {% if result %}
       <div class="alert alert-success">
-        <div class="result-dashboard">
-          <!-- Colonne gauche : KPIs + badges + explication courte -->
-          <div class="result-left">
+        <div class="result-dashboard-rows">
+          <!-- Ligne 1 : KPIs -->
+          <div class="result-row kpis-row">
             <div class="grid grid-compact">
               <div>
                 <div class="kpi-title">Prédiction</div>
@@ -44,7 +44,9 @@
 
               <div>
                 <div class="kpi-title">Risque</div>
-                <div class="kpi-value risk {{ result.risk_level }}">{{ result.risk_level | upper }}</div>
+                <div class="kpi-value risk {{ result.risk_level }}">
+                  {{ result.risk_level | upper }}
+                </div>
               </div>
 
               <div>
@@ -65,20 +67,23 @@
               </div>
             </div>
 
-            <!-- Badges compact (une seule fois) -->
-            {% include "partials/badges.html" %}
-
             <p class="note compact">
-              Lecture : <strong>ACCEPT</strong> si P(bad) &lt; A, <strong>REVIEW</strong> si A ≤ P(bad) &lt; R, <strong>REJECT</strong> si P(bad) ≥ R.
+              Lecture décision: <strong>ACCEPT</strong> si P(bad) &lt; A,
+              <strong>REVIEW</strong> si A ≤ P(bad) &lt; R,
+              <strong>REJECT</strong> si P(bad) ≥ R.
             </p>
           </div>
 
-          <!-- Colonne droite : visuels -->
-          <div class="result-right">
-            <div class="viz-grid">
+          <!-- Ligne 2 : visuels (gauge à gauche, barres à droite) -->
+          <div class="result-row viz-row">
+            <div class="viz-grid-2col">
               {% include "partials/gauge.html" %}
               {% include "partials/bars.html" %}
             </div>
+          </div>
+          <!-- Ligne 3 : badges -->
+          <div class="result-row badges-row">
+            {% include "partials/badges.html" %}
           </div>
         </div>
       </div>

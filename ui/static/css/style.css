@@ -18,7 +18,7 @@ body {
 }
 
 .container {
-  max-width: 1100px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 24px;
 }
@@ -31,6 +31,11 @@ body {
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 18px;
+}
+
+form.card {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .form-grid {
@@ -545,7 +550,7 @@ input[type="range"] {
 }
 
 .grid-compact {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
 .kpi-small {
@@ -590,6 +595,12 @@ input[type="range"] {
 }
 
 /* Responsive */
+@media (max-width: 1100px) {
+  .grid-compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 900px) {
   .result-dashboard,
   .demo-dashboard {
@@ -597,7 +608,7 @@ input[type="range"] {
   }
 
   .grid-compact {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -640,3 +651,41 @@ input[type="range"] {
 
 /* (si tu veux) décision review dans les KPI */
 .decision.review { color: #c80; }
+
+/* --- Dashboard layout (résultat) : version 3 lignes --- */
+
+.result-dashboard-rows {
+  display: grid;
+  gap: 16px;
+}
+
+/* Ligne 2 : deux cartes côte à côte */
+.viz-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px; /* cohérent avec .viz-grid */
+  align-items: start;
+}
+
+/* Évite que les cartes aient des marges internes qui cassent l’alignement */
+.viz-grid-2col .gauge-card,
+.viz-grid-2col .bars {
+  margin: 0;
+}
+
+
+
+.badges-row {
+  padding-top: 4px;
+}
+
+/* Responsive : empile sur mobile */
+@media (max-width: 900px) {
+  .viz-grid-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+.badges-row {
+  padding-top: 4px;
+}
