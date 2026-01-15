@@ -374,8 +374,12 @@ input[type="range"] {
 }
 
 .dot.threshold { background: #111; }
-.dot.threshold-accept { background: #c80; }
-.dot.threshold-reject { background: #c00; }
+.dot.threshold-accept {
+  background: var(--accept); /* bleu */
+}
+.dot.threshold-reject {
+  background: var(--reject); /* violet */
+}
 
 .dot.accept { background: #0a7; }
 .dot.reject { background: #c00; }
